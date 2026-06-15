@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSC Discussion Only</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #27ae60;
+            --danger-color: #c0392b;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex: 1;
+            width: 90%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 15px;
+            font-size: 2.2rem;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 20px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn-green { background-color: var(--secondary-color); }
+        .btn-green:hover { background-color: #219653; }
+        
+        .btn-red { background-color: var(--danger-color); }
+        .btn-red:hover { background-color: #962d22; }
+
+        .btn-blue { background-color: #2980b9; }
+        .btn-blue:hover { background-color: #2471a3; }
+
+        .btn-orange { background-color: #e67e22; }
+        .btn-orange:hover { background-color: #d35400; }
+
+        .center-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .active-page {
+            display: block;
+        }
+
+        /* Lists styling */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--light-color);
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: bold;
+        }
+
+        .list-item:hover {
+            transform: translateX(5px);
+            background: #e2e8f0;
+        }
+
+        .list-item-text {
+            flex-grow: 1;
+        }
+
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        textarea {
+            height: 120px;
+            font-family: monospace;
+        }
+
+        /* Footer / Navigation */
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            background: #e2e8f0;
+        }
+
+        #game-area {
+            border: 2px dashed #ccc;
+            padding: 15px;
+            margin-top: 20px;
+            background: #fff;
+            min-height: 200px;
+        }
+
+        .btn-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .menu-container .btn {
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .auth-form {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div id="page-home" class="page active-page">
+        <h1>PSC DISCUSSION ONLY</h1>
+        <p>പി എസ് സി ഡിസ്കഷനിലെ കൂട്ടുകാർക്ക് പഠിക്കുന്നതിന് മാത്രമായി ഉള്ള ഒരു സംവിധാനമാണിത്. ഒരു ഗവൺമെന്റ് ജോലി നേടാനായി ഇത് സഹായിക്കുമെന്ന് കരുതട്ടെ.</p>
+        <p>മുന്നോട്ട് പോകുന്നതിനായ് താഴെയുള്ള Let's GO ബട്ടൺ അമർത്തുക.</p>
+        <div class="center-wrapper">
+            <button class="btn btn-green" onclick="navigateTo('page-auth-menu')">Let's GO</button>
+        </div>
+    </div>
+
+    <div id="page-auth-menu" class="page">
+        <h1>ലോഗിൻ ഓപ്ഷനുകൾ</h1>
+        <div class="menu-container">
+            <button class="btn btn-blue" onclick="showAuthForm('admin')">ADMIN LOG-IN</button>
+            <button class="btn btn-green" onclick="showAuthForm('user-login')">USER LOG-IN</button>
+            <button class="btn btn-orange" onclick="showAuthForm('user-create')">Create USER ID and Password</button>
+        </div>
+    </div>
+
+    <div id="page-admin-login" class="page">
+        <h1>Admin Log-in</h1>
+        <div class="auth-form">
+            <div class="form-group">
+                <label for="admin-email">Admin User ID (Email):</label>
+                <input type="text" id="admin-email" placeholder="Email നൽകുക">
+            </div>
+            <div class="form-group">
+                <label for="admin-pass">Password:</label>
+                <input type="password" id="admin-pass" placeholder="Password നൽകുക">
+            </div>
+            <button class="btn btn-green" onclick="handleAdminLogin()">Login</button>
+        </div>
+    </div>
+
+    <div id="page-user-login" class="page">
+        <h1>User Log-in</h1>
+        <div class="auth-form">
+            <div class="form-group">
+                <label for="login-username">User ID:</label>
+                <input type="text" id="login-username" placeholder="User ID നൽകുക">
+            </div>
+            <div class="form-group">
+                <label for="login-pass">Password:</label>
+                <input type="password" id="login-pass" placeholder="Password നൽകുക">
+            </div>
+            <button class="btn btn-green" onclick="handleUserLogin()">Login</button>
+        </div>
+    </div>
+
+    <div id="page-user-create" class="page">
+        <h1>Create User Account</h1>
+        <p style="font-size:0.9rem; color:#7f8c8d; text-align:center;">User ID-യും Password-ഉം കുറഞ്ഞത് 8 അക്ഷരങ്ങൾ ഉണ്ടായിരിക്കണം. അതിൽ ഒരു നമ്പർ നിർബന്ധമാണ്.</p>
+        <div class="auth-form">
+            <div class="form-group">
+                <label for="reg-username">User ID:</label>
+                <input type="text" id="reg-username" placeholder="പുതിയ User ID നൽകുക">
+            </div>
+            <div class="form-group">
+                <label for="reg-pass">Password:</label>
+                <input type="password" id="reg-pass" placeholder="Password നൽകുക">
+            </div>
+            <div class="form-group">
+                <label for="reg-confirm-pass">Confirm Password:</label>
+                <input type="password" id="reg-confirm-pass" placeholder="Password വീണ്ടും നൽകുക">
+            </div>
+            <button class="btn btn-orange" onclick="handleUserRegister()">Create Account</button>
+        </div>
+    </div>
+
+    <div id="page-categories" class="page">
+        <h1>Categories</h1>
+        <div id="categories-list"></div>
+        
+        <div class="btn-group admin-only" style="display: none;">
+            <button class="btn btn-blue" onclick="addCategoryPrompt()">Add Categories</button>
+            <button class="btn btn-red" onclick="toggleDeleteMode()">DELETE Categories</button>
+        </div>
+    </div>
+
+    <div id="page-category-details" class="page">
+        <h1 id="current-category-title">Category Name</h1>
+        
+        <button class="btn btn-blue admin-only" onclick="showAddGameForm()" style="display: none;">Add GAME</button>
+
+        <div id="add-game-form" style="display: none; margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #ddd;">
+            <div class="form-group">
+                <label for="game-name">ഗെയിമിന്റെ പേര്:</label>
+                <input type="text" id="game-name" placeholder="ഗെയിമിന്റെ പേര് നൽകുക">
+            </div>
+            <div class="form-group">
+                <label for="game-code">HTML വെപ്പ് പേജ് കോഡ്:</label>
+                <textarea id="game-code" placeholder="HTML കോഡ് ഇവിടെ പേസ്റ്റ് ചെയ്യുക..."></textarea>
+            </div>
+            <button class="btn btn-green" onclick="saveNewGame()">OK</button>
+            <button class="btn btn-red" onclick="document.getElementById('add-game-form').style.display='none'">Cancel</button>
+        </div>
+
+        <h2>ഗെയിമുകൾ:</h2>
+        <div id="games-list"></div>
+    </div>
+
+    <div id="page-game-screen" class="page">
+        <h1 id="current-game-title">Game Name</h1>
+        <div id="game-area"></div>
+    </div>
+
+</div>
+
+<footer>
+    <button id="back-btn" class="btn btn-red" onclick="goBack()" style="display: none;">BACK</button>
+    <button id="logout-btn" class="btn btn-orange" onclick="logout()" style="display: none;">LOGOUT</button>
+</footer>
+
+<script>
+    // Initial Default Categories
+    let defaultCategories = ["ഗണിതം", "ബയോളജി", "ഫിസിക്സ്", "കെമിസ്ട്രി", "ജിയോഗ്രഫി"];
+    
+    // Application State
+    let appData = JSON.parse(localStorage.getItem('psc_app_data')) || {};
+    let userDatabase = JSON.parse(localStorage.getItem('psc_user_db')) || {}; // Store registered users
+    let pageHistory = ['page-home'];
+    let currentCategory = '';
+    let deleteMode = false;
+    let currentUserRole = 'guest'; // 'admin', 'user', or 'guest'
+
+    // Initialize default categories if data is empty
+    if (Object.keys(appData).length === 0) {
+        defaultCategories.forEach(cat => {
+            appData[cat] = [];
+        });
+        saveData();
+    }
+
+    // Function to Save Data to LocalStorage
+    function saveData() {
+        localStorage.setItem('psc_app_data', JSON.stringify(appData));
+    }
+
+    function saveUserDB() {
+        localStorage.setItem('psc_user_db', JSON.stringify(userDatabase));
+    }
+
+    // Navigation Logic
+    function navigateTo(pageId) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
+        document.getElementById(pageId).classList.add('active-page');
+        
+        if (pageHistory[pageHistory.length - 1] !== pageId) {
+            pageHistory.push(pageId);
+        }
+
+        // Back Button visibility rules
+        if (pageId === 'page-home') {
+            document.getElementById('back-btn').style.display = 'none';
+            document.getElementById('logout-btn').style.display = 'none';
+        } else {
+            document.getElementById('back-btn').style.display = 'inline-block';
+        }
+
+        // Logout Button rule: Only show when logged in to sections
+        if (pageId === 'page-categories' || pageId === 'page-category-details' || pageId === 'page-game-screen') {
+            document.getElementById('logout-btn').style.display = 'inline-block';
+        } else {
+            document.getElementById('logout-btn').style.display = 'none';
+        }
+
+        // Manage role-based UI visibility
+        if (currentUserRole === 'admin') {
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+        } else {
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+        }
+
+        // Page specific loads
+        if (pageId === 'page-categories') {
+            renderCategories();
+            deleteMode = false;
+        }
+    }
+
+    function goBack() {
+        if (pageHistory.length > 1) {
+            pageHistory.pop();
+            let previousPage = pageHistory[pageHistory.length - 1];
+            
+            if (previousPage === 'page-category-details') {
+                document.getElementById('game-area').innerHTML = '';
+            }
+
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
+            document.getElementById(previousPage).classList.add('active-page');
+
+            // Controls on back movement
+            if (previousPage === 'page-home') {
+                document.getElementById('back-btn').style.display = 'none';
+                document.getElementById('logout-btn').style.display = 'none';
+                currentUserRole = 'guest'; // Reset role on home
+            } else if (previousPage === 'page-auth-menu') {
+                currentUserRole = 'guest';
+                document.getElementById('logout-btn').style.display = 'none';
+            }
+            
+            if (previousPage === 'page-categories') {
+                renderCategories();
+            }
+
+            // Keep Role-UI correct
+            if (currentUserRole === 'admin') {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            } else {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+            }
+        }
+    }
+
+    function logout() {
+        currentUserRole = 'guest';
+        pageHistory = ['page-home'];
+        navigateTo('page-home');
+        alert("നിങ്ങൾ ലോഗ് ഔട്ട് ആയിരിക്കുന്നു.");
+    }
+
+    // --- AUTHENTICATION FLOWS ---
+    function showAuthForm(type) {
+        if (type === 'admin') {
+            document.getElementById('admin-email').value = '';
+            document.getElementById('admin-pass').value = '';
+            navigateTo('page-admin-login');
+        } else if (type === 'user-login') {
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-pass').value = '';
+            navigateTo('page-user-login');
+        } else if (type === 'user-create') {
+            document.getElementById('reg-username').value = '';
+            document.getElementById('reg-pass').value = '';
+            document.getElementById('reg-confirm-pass').value = '';
+            navigateTo('page-user-create');
+        }
+    }
+
+    // Validation helper: Min 8 chars and contains at least 1 number
+    function validateCredentials(text) {
+        const hasNumber = /\d/.test(text);
+        const hasMinLength = text.length >= 8;
+        return hasNumber && hasMinLength;
+    }
+
+    function handleAdminLogin() {
+        const email = document.getElementById('admin-email').value.trim();
+        const pass = document.getElementById('admin-pass').value;
+
+        if (email === "pscdiscussiononly1@gmail.com" && pass === "Admin1login") {
+            currentUserRole = 'admin';
+            alert("Admin Login വിജയകരമായി പൂർത്തിയായി!");
+            navigateTo('page-categories');
+        } else {
+            alert("തെറ്റായ User ID അല്ലെങ്കിൽ Password!");
+        }
+    }
+
+    function handleUserRegister() {
+        const username = document.getElementById('reg-username').value.trim();
+        const pass = document.getElementById('reg-pass').value;
+        const confirmPass = document.getElementById('reg-confirm-pass').value;
+
+        if (!validateCredentials(username)) {
+            alert("User ID-ൽ കുറഞ്ഞത് 8 അക്ഷരങ്ങൾ ഉണ്ടായിരിക്കണം, ഒരു നമ്പറും നിർബന്ധമാണ്!");
+            return;
+        }
+
+        if (!validateCredentials(pass)) {
+            alert("Password-ൽ കുറഞ്ഞത് 8 അക്ഷരങ്ങൾ ഉണ്ടായിരിക്കണം, ഒരു നമ്പറും നിർബന്ധമാണ്!");
+            return;
+        }
+
+        if (pass !== confirmPass) {
+            alert("പാസ്‌വേഡുകൾ പരസ്പരം ഒത്തുപോകുന്നില്ല (Confirm Password Match ആകുന്നില്ല)!");
+            return;
+        }
+
+        if (userDatabase[username]) {
+            alert("ഈ User ID നിലവിലുണ്ട്! ദയവായി മറ്റൊന്ന് തിരഞ്ഞെടുക്കുക.");
+            return;
+        }
+
+        // Register user
+        userDatabase[username] = pass;
+        saveUserDB();
+        alert("അക്കൗണ്ട് വിജയകരമായി നിർമ്മിച്ചു! ഇനി ലോഗിൻ ചെയ്യാം.");
+        showAuthForm('user-login');
+    }
+
+    function handleUserLogin() {
+        const username = document.getElementById('login-username').value.trim();
+        const pass = document.getElementById('login-pass').value;
+
+        if (userDatabase[username] && userDatabase[username] === pass) {
+            currentUserRole = 'user';
+            alert("User Login വിജയകരമായി പൂർത്തിയായി!");
+            navigateTo('page-categories');
+        } else {
+            alert("തെറ്റായ User ID അല്ലെങ്കിൽ Password!");
+        }
+    }
+
+    // --- CATEGORY MANAGEMENT ---
+    function renderCategories() {
+        const listContainer = document.getElementById('categories-list');
+        listContainer.innerHTML = '';
+
+        Object.keys(appData).forEach(category => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'list-item-text';
+            textSpan.innerText = category;
+            textSpan.onclick = () => {
+                if(!deleteMode) openCategory(category);
+            };
+
+            div.appendChild(textSpan);
+
+            // Admin can delete in deleteMode
+            if (deleteMode && currentUserRole === 'admin') {
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn btn-red';
+                delBtn.style.padding = '5px 10px';
+                delBtn.innerText = 'Delete';
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if(confirm(`"${category}" ഇല്ലാതാക്കണോ?`)) {
+                        delete appData[category];
+                        saveData();
+                        renderCategories();
+                    }
+                };
+                div.appendChild(delBtn);
+            }
+
+            listContainer.appendChild(div);
+        });
+    }
+
+    function addCategoryPrompt() {
+        if (currentUserRole !== 'admin') return;
+        let newCat = prompt("പുതിയ കാറ്റഗറിയുടെ പേര് നൽകുക:");
+        if (newCat && newCat.trim() !== "") {
+            newCat = newCat.trim();
+            if (appData[newCat]) {
+                alert("ഈ കാറ്റഗറി നിലവിലുണ്ട്!");
+            } else {
+                appData[newCat] = [];
+                saveData();
+                renderCategories();
+            }
+        }
+    }
+
+    function toggleDeleteMode() {
+        if (currentUserRole !== 'admin') return;
+        deleteMode = !deleteMode;
+        renderCategories();
+        if(deleteMode) {
+            alert("ഇനി നിങ്ങൾക്ക് ആവശ്യമില്ലാത്ത കാറ്റഗറികൾക്ക് നേരെയുള്ള Delete ബട്ടൺ അമർത്തി അവ ഒഴിവാക്കാം.");
+        }
+    }
+
+    function openCategory(category) {
+        currentCategory = category;
+        document.getElementById('current-category-title').innerText = category;
+        document.getElementById('add-game-form').style.display = 'none';
+        renderGames();
+        navigateTo('page-category-details');
+    }
+
+    // --- GAME MANAGEMENT ---
+    function showAddGameForm() {
+        if (currentUserRole !== 'admin') return;
+        document.getElementById('game-name').value = '';
+        document.getElementById('game-code').value = '';
+        document.getElementById('add-game-form').style.display = 'block';
+    }
+
+    function saveNewGame() {
+        if (currentUserRole !== 'admin') return;
+        const name = document.getElementById('game-name').value.trim();
+        const code = document.getElementById('game-code').value.trim();
+
+        if (name === "" || code === "") {
+            alert("ദയവായി പേരും HTML കോഡും നൽകുക!");
+            return;
+        }
+
+        appData[currentCategory].push({ name: name, code: code });
+        saveData();
+        
+        document.getElementById('add-game-form').style.display = 'none';
+        renderGames();
+    }
+
+    function renderGames() {
+        const gamesContainer = document.getElementById('games-list');
+        gamesContainer.innerHTML = '';
+
+        const games = appData[currentCategory] || [];
+
+        if(games.length === 0) {
+            gamesContainer.innerHTML = '<p style="text-align:left; color:#7f8c8d;">ഗെയിമുകൾ ഒന്നും ചേർത്തിട്ടില്ല.</p>';
+            return;
+        }
+
+        games.forEach((game, index) => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'list-item-text';
+            textSpan.innerText = game.name;
+            textSpan.onclick = () => playGame(game);
+            div.appendChild(textSpan);
+
+            // Only show delete button for games if Admin is logged in
+            if (currentUserRole === 'admin') {
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn btn-red';
+                delBtn.style.padding = '5px 10px';
+                delBtn.innerText = 'Delete';
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if(confirm(`"${game.name}" എന്ന ഗെയിം ഇല്ലാതാക്കണോ?`)) {
+                        appData[currentCategory].splice(index, 1);
+                        saveData();
+                        renderGames();
+                    }
+                };
+                div.appendChild(delBtn);
+            }
+
+            gamesContainer.appendChild(div);
+        });
+    }
+
+    function playGame(game) {
+        document.getElementById('current-game-title').innerText = game.name;
+        
+        const gameArea = document.getElementById('game-area');
+        gameArea.innerHTML = ''; 
+        
+        const iframe = document.createElement('iframe');
+        iframe.style.width = '100%';
+        iframe.style.height = '400px';
+        iframe.style.border = 'none';
+        gameArea.appendChild(iframe);
+        
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(game.code);
+        doc.close();
+
+        navigateTo('page-game-screen');
+    }
+</script>
+
+</body>
+</html>
