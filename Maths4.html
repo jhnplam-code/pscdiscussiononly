@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>വരിയും നിരയും - PSC ഇൻ്ററാക്ടീവ് ക്വിസ് ഗെയിം</title>
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --bg-color: #f0fdf4;
+            --text-color: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+            border: 3px solid var(--primary-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+
+        .progress-bar {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        .question-box {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: #0f172a;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        /* ഹൈപ്പർലിങ്ക് രൂപത്തിലുള്ള ഓപ്ഷനുകൾ */
+        .option-link {
+            display: block;
+            background-color: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 18px 25px;
+            font-size: 22px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .option-link:hover {
+            background-color: #e2e8f0;
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 22px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .skip-btn {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .skip-btn:hover {
+            background-color: #d97706;
+        }
+
+        .submit-btn {
+            background-color: var(--success-color);
+            color: white;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #059669;
+        }
+
+        .action-btn {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .result-card {
+            font-size: 24px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .total-score {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-align: center;
+            background-color: #eff6ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .congrats-box {
+            text-align: center;
+            color: var(--success-color);
+            font-size: 32px;
+            font-weight: bold;
+            padding: 40px 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>വരിയും നിരയും - കളിച്ച് പഠിക്കാം</h1>
+    
+    <div id="game-view">
+        <div class="progress-bar" id="progress-text">ചോദ്യം: 1/10</div>
+        <div class="question-box" id="question-text">ചോദ്യം ഇവിടെ വരും...</div>
+        <div class="options-container" id="options-box">
+            </div>
+        <div class="button-group">
+            <button class="skip-btn" id="skip-button" onclick="skipQuestion()">ഈ ചോദ്യം ഒഴിവാക്കുക (Skip)</button>
+        </div>
+    </div>
+
+    <div id="submit-view" class="hidden">
+        <div class="result-card" style="text-align: center; padding: 20px;">
+            <p style="font-weight: bold; font-size: 26px;">നിങ്ങൾ മുഴുവൻ ചോദ്യങ്ങളും പൂർത്തിയാക്കിയിരിക്കുന്നു.</p>
+            <p>നിങ്ങളുടെ സ്കോർ കാണാൻ താഴെ നൽകിയിരിക്കുന്ന സബ്മിറ്റ് ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.</p>
+        </div>
+        <button class="submit-btn" onclick="showResults()">SUBMIT</button>
+    </div>
+
+    <div id="result-view" class="hidden">
+        <div class="result-card">
+            <div class="result-item"><span>ആകെ ശരിയുത്തരം:</span> <span id="res-correct" style="color: var(--success-color); font-weight:bold;">0</span></div>
+            <div class="result-item"><span>ആകെ തെറ്റുത്തരം:</span> <span id="res-wrong" style="color: var(--danger-color); font-weight:bold;">0</span></div>
+            <div class="result-item"><span>സ്കിപ്പ് ചെയ്തത്:</span> <span id="res-skipped" style="color: var(--warning-color); font-weight:bold;">0</span></div>
+            <div class="total-score" id="res-score">ആകെ സ്കോർ: 0</div>
+        </div>
+        <button class="action-btn" id="result-next-btn" onclick="goToNextStage()">ഓക്കേ</button>
+    </div>
+
+    <div id="retry-view" class="hidden">
+        <div class="result-card" style="text-align: center; padding: 20px;">
+            <p style="font-weight: bold; color: var(--text-color);">തെറ്റുത്തരങ്ങൾ ശരിയാക്കുന്നതിന് ഒരവസരം കൂടി ലഭ്യമാണ്!</p>
+            <p>നിങ്ങൾ തയ്യാറാണെങ്കിൽ താഴെയുള്ള 'ലെറ്റ്സ് ഗോ' ബട്ടണിൽ ക്ലിക്ക് ചെയ്ത് തെറ്റിയതും സ്കിപ്പ് ചെയ്തതുമായ ചോദ്യങ്ങൾ വീണ്ടും കളിക്കുക.</p>
+        </div>
+        <button class="submit-btn" style="background-color: var(--secondary-color);" onclick="startRetryStage()">ലെറ്റ്സ് ഗോ (LET'S GO)</button>
+    </div>
+
+    <div id="victory-view" class="hidden">
+        <div class="congrats-box">
+            🎉 അഭിനന്ദനങ്ങൾ! 🎉<br>
+            <span style="font-size: 26px; color: var(--text-color); display:block; margin-top:20px;">നിങ്ങൾ എല്ലാ ചോദ്യങ്ങൾക്കും ശരിയുത്തരം കണ്ടെത്തിയിരിക്കുന്നു!</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 10 പ്രധാന ചോദ്യങ്ങൾ (1-5 എളുപ്പമുള്ളത്/മീഡിയം, 6-10 കഠിനമായവ)
+    const allQuestions = [
+        { id: 1, q: "ഒരു വരിയിൽ രാഹുൽ മുന്നിൽ നിന്ന് 15-ാമനും പിന്നിൽ നിന്ന് 15-ാമനും ആണ് എങ്കിൽ വരിയിൽ ആകെ എത്ര പേരുണ്ട്?", options: ["29", "30", "31", "28"], correct: "29" },
+        { id: 2, q: "40 കുട്ടികളുള്ള ഒരു ക്ലാസിൽ സിനാൻ്റെ സ്ഥാനം മുകളിൽ നിന്നും 12-ാമതാണ്. എങ്കിൽ താഴെ നിന്നും സിനാൻ്റെ സ്ഥാനം എത്രയാണ്?", options: ["29", "28", "30", "31"], correct: "29" },
+        { id: 3, q: "ഒരു നിരയിൽ രാജു ഇടത്തുനിന്ന് പതിനൊന്നാമനും രമേശ് വലത്തുനിന്ന് പന്ത്രണ്ടാമനുമാണ്. അവർ പരസ്പരം സ്ഥാനം മാറിയപ്പോൾ രാജു ഇടത്തുനിന്ന് പതിനെട്ടാമനായി. നിരയിൽ ആകെ എത്ര പേരുണ്ട്?", options: ["29", "30", "28", "31"], correct: "29" },
+        { id: 4, q: "ഒരു വരിയിൽ അച്ചുവിൻ്റെ സ്ഥാനം ഇടത്തുനിന്നും വലത്തുനിന്നും 9-ാമതാണ്. എങ്കിൽ വരിയിൽ ആകെ എത്ര കുട്ടികളുണ്ട്?", options: ["17", "18", "19", "16"], correct: "17" },
+        { id: 5, q: "50 പേരുള്ള ഒരു നിരയിൽ അനന്തുവിൻ്റെ സ്ഥാനം മുന്നിൽ നിന്നും 21-ാമതാണ്. അനന്തുവിന് തൊട്ടുപിന്നിലുള്ള നിതിൻ്റെ സ്ഥാനം അവസാനം നിന്നും എത്രയാണ്?", options: ["29", "30", "28", "31"], correct: "29" },
+        // കഠിനമായ ചോദ്യങ്ങൾ (ലെവൽ കൂടിയവ)
+        { id: 6, q: "ഒരു വരിയിൽ എ ജയൻ്റെ പുറകിലും എന്നാൽ ബി ജയൻ്റെ മുന്നിലുമാണ്. സി ബി-യുടെ മുന്നിലും ഡി സി-യുടെ പുറകിലുമായാൽ ഏറ്റവും മുന്നിൽ നിൽക്കുന്നത് ആരാണ്?", options: ["സി (C)", "ബി (B)", "എ (A)", "ഡി (D)"], correct: "സി (C)" },
+        { id: 7, q: "ഒരു വരിയിൽ പിടിച്ചിരിക്കുന്ന ആൺകുട്ടികളിൽ അമൽ ഇടത്തുനിന്ന് 16-ാമതും ബിമൽ വലത്തുനിന്ന് 11-ാമതുമാണ്. അവർക്കിടയിൽ 6 ആൺകുട്ടികളുണ്ടെങ്കിൽ ആ വരിയിലുണ്ടാകാൻ സാധ്യതയുള്ള 'ഏറ്റവും കുറഞ്ഞ' (Minimum) കുട്ടികളുടെ എണ്ണം എത്ര?", options: ["20", "33", "22", "19"], correct: "20" },
+        { id: 8, q: "സുരേഷ് ഒരു വരിയിൽ മുന്നിൽ നിന്നും 7-ാമതും അശോക് സുരേഷിനേക്കാൾ 4 സ്ഥാനം പുറകിലുമാണ്. അശോക് അവസാനം നിന്നും 15-ാമതാണെങ്കിൽ വരിയിൽ ആകെ എത്ര പേരുണ്ട്?", options: ["25", "26", "24", "27"], correct: "25" },
+        { id: 9, q: "ഒരു ക്ലാസ് പരീക്ഷയിൽ വിജയിച്ചവരിൽ രാമുവിൻ്റെ സ്ഥാനം മുകളിൽ നിന്ന് 14-ാമതും താഴെ നിന്ന് 28-ാമതുമാണ്. 6 പേർ പരീക്ഷ എഴുതുകയോ 5 പേർ പരാജയപ്പെടുകയോ ചെയ്തിട്ടുണ്ട് എങ്കിൽ ക്ലാസിലെ ആകെ കുട്ടികളുടെ എണ്ണം എത്ര?", options: ["52", "41", "47", "53"], correct: "52" },
+        { id: 10, q: "ഒരു നിരയിൽ കുരങ്ങന്മാർ ഇരിക്കുന്നു. ഒരു കുരങ്ങൻ ഇടത്തുനിന്ന് 23-ാമതും വലത്തുനിന്ന് 18-ാമതുമാണ്. മറ്റൊരു വരിയിൽ ഇരിക്കുന്ന പക്ഷികളിൽ ഒരു പക്ഷി ഇടത്തുനിന്ന് 15-ാമതും വലത്തുനിന്ന് 21-ാമതുമാണ്. എങ്കിൽ കുരങ്ങന്മാരുടെയും പക്ഷികളുടെയും ആകെ എണ്ണങ്ങൾ തമ്മിലുള്ള വ്യത്യാസം എത്ര?", options: ["5", "6", "4", "7"], correct: "5" }
+    ];
+
+    let currentPool = [...allQuestions]; // നിലവിൽ കളിക്കുന്ന ചോദ്യങ്ങളുടെ കൂട്ടം
+    let currentPoolIndex = 0; // നിലവിലെ പൂളിലെ സൂചിക
+
+    // സ്കോർ സൂക്ഷിക്കാൻ (മുഴുവൻ ഗെയിമിലുടനീളം)
+    let globalCorrectCount = 0;
+    let roundCorrect = 0;
+    let roundWrong = 0;
+    let roundSkipped = 0;
+
+    let wrongQuestions = [];  // തെറ്റിയ ചോദ്യങ്ങൾ സൂക്ഷിക്കാൻ
+    let skippedQuestions = []; // സ്കിപ്പ് ചെയ്ത ചോദ്യങ്ങൾ സൂക്ഷിക്കാൻ
+
+    // പേജ് ലോഡ് ചെയ്യുമ്പോൾ ആദ്യ ചോദ്യം കാണിക്കുക
+    window.onload = function() {
+        loadQuestion();
+    };
+
+    function loadQuestion() {
+        if (currentPoolIndex < currentPool.length) {
+            // ഗെയിം വ്യൂ മാത്രം കാണിക്കുക
+            document.getElementById("game-view").classList.remove("hidden");
+            document.getElementById("submit-view").classList.add("hidden");
+            document.getElementById("result-view").classList.add("hidden");
+            document.getElementById("retry-view").classList.add("hidden");
+
+            let currentQ = currentPool[currentPoolIndex];
+            
+            // പ്രോഗ്രസ് ബാർ അപ്ഡേറ്റ്
+            document.getElementById("progress-text").innerText = `ചോദ്യം: ${currentPoolIndex + 1} / ${currentPool.length}`;
+            document.getElementById("question-text").innerText = currentQ.q;
+
+            // ഓപ്ഷനുകൾ ഷഫിൾ ചെയ്യുക (സ്ഥാനം മാറാൻ)
+            let shuffledOptions = shuffle([...currentQ.options]);
+            
+            let optionsHTML = "";
+            shuffledOptions.forEach(opt => {
+                // അന്ധർക്കും കാഴ്ചപരിമിതർക്കും എളുപ്പത്തിൽ ആക്സസ് ചെയ്യാൻ ‘a’ ടാഗ് ഹൈപ്പർലിങ്ക് രൂപത്തിൽ
+                optionsHTML += `<a class="option-link" role="button" tabindex="0" onclick="checkAnswer('${opt.replace(/'/g, "\\'")}')">${opt}</a>`;
+            });
+            
+            document.getElementById("options-box").innerHTML = optionsHTML;
+        } else {
+            // പൂളിലെ ചോദ്യങ്ങൾ തീർന്നാൽ സബ്മിറ്റ് പേജ് കാണിക്കുക
+            document.getElementById("game-view").classList.add("hidden");
+            document.getElementById("submit-view").classList.remove("hidden");
+        }
+    }
+
+    // ഓപ്ഷനുകൾ റാൻഡം ആയി മാറ്റാനുള്ള ഫങ്ക്ഷൻ
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // ഉത്തരം പരിശോധിക്കുന്ന ഫങ്ക്ഷൻ
+    function checkAnswer(selectedOption) {
+        let currentQ = currentPool[currentPoolIndex];
+        if (selectedOption === currentQ.correct) {
+            roundCorrect++;
+        } else {
+            roundWrong++;
+            wrongQuestions.push(currentQ); // തെറ്റിയതിലേക്ക് മാറ്റുന്നു
+        }
+        currentPoolIndex++;
+        loadQuestion();
+    }
+
+    // ചോദ്യം സ്കിപ്പ് ചെയ്യുമ്പോൾ
+    function skipQuestion() {
+        let currentQ = currentPool[currentPoolIndex];
+        roundSkipped++;
+        skippedQuestions.push(currentQ); // സ്കിപ്പ് ചെയ്തതിലേക്ക് മാറ്റുന്നു
+        currentPoolIndex++;
+        loadQuestion();
+    }
+
+    // ഫൈനൽ റിസൾട്ട് കാണിക്കാൻ
+    function showResults() {
+        document.getElementById("submit-view").classList.add("hidden");
+        document.getElementById("result-view").classList.remove("hidden");
+
+        document.getElementById("res-correct").innerText = roundCorrect;
+        document.getElementById("res-wrong").innerText = roundWrong;
+        document.getElementById("res-skipped").innerText = roundSkipped;
+
+        // സ്കോർ കണക്കാക്കൽ: ശരിക്ക് 1, തെറ്റിന് -0.33, സ്കിപ്പിന് 0
+        let totalScore = (roundCorrect * 1) + (roundWrong * -0.33);
+        document.getElementById("res-score").innerText = `ആകെ സ്കോർ: ${totalScore.toFixed(2)}`;
+    }
+
+    // ഓക്കേ ബട്ടൺ അമർത്തുമ്പോൾ
+    function goToNextStage() {
+        document.getElementById("result-view").classList.add("hidden");
+        
+        // മുൻപത്തെ റൗണ്ടിലെ ശരി ഉത്തരങ്ങൾ ആകെ ശരി ഉത്തരങ്ങളിലേക്ക് കൂട്ടുന്നു
+        globalCorrectCount += roundCorrect;
+
+        // തെറ്റിയതോ സ്കിപ്പ് ചെയ്തതോ ആയ ചോദ്യങ്ങൾ ബാക്കിയുണ്ടോ എന്ന് നോക്കുന്നു
+        if (wrongQuestions.length > 0 || skippedQuestions.length > 0) {
+            document.getElementById("retry-view").classList.remove("hidden");
+        } else {
+            // എല്ലാം ശരിയാക്കിയാൽ വിക്ടറി പേജ്
+            document.getElementById("victory-view").classList.remove("hidden");
+        }
+    }
+
+    // 'ലെറ്റ്സ് ഗോ' അമർത്തുമ്പോൾ പുതിയ ഗെയിം റൗണ്ട് ആരംഭിക്കുന്നു
+    function startRetryStage() {
+        // പുതിയ പൂളിലേക്ക് തെറ്റിയതും സ്കിപ്പ് ചെയ്തതുമായ ചോദ്യങ്ങൾ മാത്രം മാറ്റുന്നു
+        currentPool = [...wrongQuestions, ...skippedQuestions];
+        
+        // റീസെറ്റ് വേരിയബിളുകൾ
+        currentPoolIndex = 0;
+        roundCorrect = 0;
+        roundWrong = 0;
+        roundSkipped = 0;
+        wrongQuestions = [];
+        skippedQuestions = [];
+
+        loadQuestion();
+    }
+</script>
+
+</body>
+</html>

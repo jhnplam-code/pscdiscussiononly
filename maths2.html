@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSC Maths Quiz: തീവണ്ടിയും സമയവും</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f0f4f8;
+            color: #2d3748;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            border-top: 8px solid #1a365d;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+        h1 {
+            color: #1a365d;
+            font-size: 28pt;
+            margin: 0 0 10px 0;
+        }
+        .subtitle {
+            font-size: 16pt;
+            color: #4a5568;
+            font-weight: bold;
+        }
+        .progress-bar {
+            background-color: #edf2f7;
+            height: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: #3182ce;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .question-box {
+            font-size: 20pt;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #1a202c;
+        }
+        .options-container {
+            display: block;
+        }
+        .option-btn {
+            display: block;
+            width: 100%;
+            background-color: #f7fafc;
+            border: 2px solid #cbd5e0;
+            border-radius: 10px;
+            padding: 18px 25px;
+            margin-bottom: 15px;
+            font-size: 18pt;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #2d3748;
+            font-weight: 500;
+        }
+        .option-btn:hover {
+            background-color: #ebf8ff;
+            border-color: #3182ce;
+            transform: translateY(-2px);
+        }
+        .control-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 2px solid #e2e8f0;
+        }
+        .action-btn {
+            padding: 15px 30px;
+            font-size: 18pt;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .skip-btn {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+        .skip-btn:hover {
+            background-color: #cbd5e0;
+        }
+        .submit-btn {
+            background-color: #38a169;
+            color: white;
+            width: 100%;
+        }
+        .submit-btn:hover {
+            background-color: #2f855a;
+        }
+        .primary-btn {
+            background-color: #3182ce;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 18pt;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0 auto;
+        }
+        .primary-btn:hover {
+            background-color: #2b6cb0;
+        }
+        .result-row {
+            font-size: 18pt;
+            margin: 15px 0;
+            padding: 10px;
+            border-bottom: 1px dashed #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .score-display {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #2b6cb0;
+            text-align: center;
+            margin: 25px 0;
+            background-color: #ebf8ff;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .congrats-box {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .congrats-title {
+            color: #2f855a;
+            font-size: 28pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 22pt; }
+            .question-box { font-size: 16pt; }
+            .option-btn { font-size: 15pt; }
+            .action-btn { font-size: 15pt; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <!-- Header Section -->
+    <div class="header">
+        <h1>കേരള PSC ക്വിസ്</h1>
+        <div class="subtitle">തീവണ്ടിയും സമയവും (Trains & Time)</div>
+    </div>
+
+    <!-- Quiz Area -->
+    <div id="quiz-screen">
+        <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <div id="question-text" class="question-box"></div>
+        <div id="options-box" class="options-container"></div>
+        <div class="control-panel">
+            <button id="skip-button" class="action-btn skip-btn" onclick="skipQuestion()">സ്കിപ്പ് ചെയ്യുക (Skip)</button>
+        </div>
+    </div>
+
+    <!-- Pre-Submit Screen -->
+    <div id="presubmit-screen" class="hidden">
+        <div class="question-box" style="text-align: center;">
+            നിങ്ങൾ മുഴുവൻ ചോദ്യങ്ങളും പൂർത്തിയാക്കിയിരിക്കുന്നു. നിങ്ങളുടെ സ്കോർ കാണാൻ താഴെ നൽകിയിരിക്കുന്ന സബ്മിറ്റ് ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.
+        </div>
+        <button class="action-btn submit-btn" onclick="showResults()">സബ്മിറ്റ് (Submit)</button>
+    </div>
+
+    <!-- Score/Result Screen -->
+    <div id="result-screen" class="hidden">
+        <div class="subtitle" style="text-align: center; margin-bottom: 20px;">ക്വിസ് ഫലം (Quiz Result)</div>
+        <div class="result-row"><span>ആകെ ശരിയുത്തരങ്ങൾ:</span> <span id="res-correct" style="color: #28a745; font-weight:bold;">0</span></div>
+        <div class="result-row"><span>ആകെ തെറ്റുത്തരങ്ങൾ:</span> <span id="res-wrong" style="color: #dc3545; font-weight:bold;">0</span></div>
+        <div class="result-row"><span>സ്കിപ്പ് ചെയ്തവ:</span> <span id="res-skipped" style="color: #6c757d; font-weight:bold;">0</span></div>
+        <div id="total-score" class="score-display">ആകെ സ്കോർ: 0</div>
+        <button class="primary-btn" onclick="goToNextStep()">ഓക്കെ (OK)</button>
+    </div>
+
+    <!-- Let's Go / Retry Setup Screen -->
+    <div id="retry-screen" class="hidden">
+        <div class="question-box" style="text-align: center; font-size: 18pt;">
+            തെറ്റിയതും സ്കിപ്പ് ചെയ്തതുമായ ചോദ്യങ്ങൾ ശരിയാക്കുന്നതിന് ഒരു അവസരം കൂടെ വേണമെങ്കിൽ താഴെയുള്ള 'ലെറ്റ്സ് ഗോ' ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.
+        </div>
+        <button class="primary-btn" style="background-color: #e67e22;" onclick="startNextRound()">ലെറ്റ്സ് ഗോ (Let's Go)</button>
+    </div>
+
+    <!-- Final Success Screen -->
+    <div id="success-screen" class="hidden">
+        <div class="congrats-box">
+            <div class="congrats-title">🎉 അഭിനന്ദനങ്ങൾ! 🎉</div>
+            <div class="question-box" style="text-align: center;">
+                നിങ്ങൾ എല്ലാ ചോദ്യങ്ങൾക്കും ശരിയുത്തരം കണ്ടെത്തിയിരിക്കുന്നു!
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // All 15 Questions Dataset
+    const allQuestions = [
+        {
+            id: 1,
+            q: "1. ഒരു തീവണ്ടി 72 km/h വേഗതയിലാണ് സഞ്ചരിക്കുന്നത്. എങ്കിൽ ഇതിന്റെ വേഗത മീറ്റർ/സെക്കൻഡിൽ (m/s) എത്രയാണ്?",
+            options: ["15 m/s", "20 m/s", "25 m/s", "30 m/s"],
+            correct: "20 m/s"
+        },
+        {
+            id: 2,
+            q: "2. ഒരു തീവണ്ടിയുടെ വേഗത 15 m/s ആണ്. എങ്കിൽ ഈ തീവണ്ടിയുടെ വേഗത കി.മീ/മണിക്കൂറിൽ (km/h) എത്രയാണ്?",
+            options: ["54 km/h", "45 km/h", "60 km/h", "72 km/h"],
+            correct: "54 km/h"
+        },
+        {
+            id: 3,
+            q: "3. 60 km/h വേഗതയിൽ സഞ്ചരിക്കുന്ന 240 മീറ്റർ നീളമുള്ള ഒരു തീവണ്ടി പാതയോരത്തെ ഒരു പോസ്റ്റ് കടന്നുപോകാൻ എത്ര സമയമെടുക്കും?",
+            options: ["12 സെക്കൻഡ്", "14.4 സെക്കൻഡ്", "15 സെക്കൻഡ്", "16 സെക്കൻഡ്"],
+            correct: "14.4 സെക്കൻഡ്"
+        },
+        {
+            id: 4,
+            q: "4. 150 മീറ്റർ നീളമുള്ള ഒരു തീവണ്ടി 54 km/h വേഗതയിൽ സഞ്ചരിക്കുന്നു. 250 മീറ്റർ നീളമുള്ള ഒരു പാലം മുറിച്ചുകടക്കാൻ ഈ തീവണ്ടി എത്ര സമയമെടുക്കും?",
+            options: ["20 സെക്കൻഡ്", "25 സെക്കൻഡ്", "26.66 സെക്കൻഡ്", "30 സെക്കൻഡ്"],
+            correct: "26.66 സെക്കൻഡ്"
+        },
+        {
+            id: 5,
+            q: "5. 90 km/h വേഗതയിൽ പോകുന്ന ഒരു തീവണ്ടി ഒരു സിഗ്നൽ പോസ്റ്റ് കടക്കാൻ 10 സെക്കൻഡ് എടുത്തു. എങ്കിൽ തീവണ്ടിയുടെ നീളം എത്ര?",
+            options: ["200 മീറ്റർ", "250 മീറ്റർ", "300 മീറ്റർ", "900 മീറ്റർ"],
+            correct: "250 മീറ്റർ"
+        },
+        {
+            id: 6,
+            q: "6. 120 മീറ്റർ നീളമുള്ള ഒരു തീവണ്ടി പാതയോരത്തെ ഒരു മരം കടന്നുപോകാൻ 6 സെക്കൻഡ് എടുക്കുന്നു. എങ്കിൽ തീവണ്ടിയുടെ വേഗത km/h-ൽ എത്രയാണ്?",
+            options: ["20 km/h", "60 km/h", "72 km/h", "80 km/h"],
+            correct: "72 km/h"
+        },
+        {
+            id: 7,
+            q: "7. ഒരേ ദിശയിൽ യഥാക്രമം 50 km/h, 32 km/h വേഗതയിൽ സഞ്ചരിക്കുന്ന രണ്ട് തീവണ്ടികളുടെ ആപേക്ഷിക വേഗത (Relative Speed) എത്രയാണ്?",
+            options: ["18 km/h", "82 km/h", "41 km/h", "15 km/h"],
+            correct: "18 km/h"
+        },
+        {
+            id: 8,
+            q: "8. എതിർ ദിശകളിൽ യഥാക്രമം 45 km/h, 35 km/h വേഗതയിൽ സഞ്ചരിക്കുന്ന രണ്ട് തീവണ്ടികളുടെ ആപേക്ഷിക വേഗത എത്രയാണ്?",
+            options: ["10 km/h", "40 km/h", "75 km/h", "80 km/h"],
+            correct: "80 km/h"
+        },
+        {
+            id: 9,
+            q: "9. 100 മീറ്റർ നീളമുള്ള ഒരു തീവണ്ടി 45 km/h വേഗതയിൽ സഞ്ചരിക്കുന്നു. തീവണ്ടിയുടെ എതിർദിശയിൽ 5 km/h വേഗതയിൽ ഓടുന്ന ഒരാളെ കടന്നുപോകാൻ തീവണ്ടി എത്ര സമയമെടുക്കും?",
+            options: ["7.2 സെക്കൻഡ്", "8 സെക്കൻഡ്", "9 സെക്കൻഡ്", "10 സെക്കൻഡ്"],
+            correct: "7.2 സെക്കൻഡ്"
+        },
+        {
+            id: 10,
+            q: "10. 150 മീറ്റർ നീളമുള്ള ഒരു തീവണ്ടി 65 km/h വേഗതയിൽ സഞ്ചരിക്കുന്നു. തീവണ്ടിയുടെ അതേ ദിശയിൽ 5 km/h വേഗതയിൽ ഓടുന്ന ഒരാളെ മറികടക്കാൻ തീവണ്ടി എത്ര സമയമെടുക്കും?",
+            options: ["7.5 സെക്കൻഡ്", "9 സെക്കൻഡ്", "10 സെക്കൻഡ്", "12 സെക്കൻഡ്"],
+            correct: "9 സെക്കൻഡ്"
+        },
+        {
+            id: 11,
+            q: "11. തുല്യ നീളമുള്ള രണ്ട് തീവണ്ടികൾ ഒരു പോസ്റ്റിനെ മറികടക്കാൻ യഥാക്രമം 10 സെക്കൻഡും 15 സെക്കൻഡും എടുക്കുന്നു. അവ എതിർദിശയിലാണ് സഞ്ചരിക്കുന്നതെങ്കിൽ പരസ്പരം കടന്നുപോകാൻ എത്ര സമയമെടുക്കും?",
+            options: ["11 സെക്കൻഡ്", "12 സെക്കൻഡ്", "12.5 സെക്കൻഡ്", "14 സെക്കൻഡ്"],
+            correct: "12 സെക്കൻഡ്"
+        },
+        {
+            id: 12,
+            q: "12. ഒരു തീവണ്ടി സ്റ്റേഷനുകളിൽ നിർത്താതെ പോവുകയാണെങ്കിൽ മണിക്കൂറിൽ 54 കി.മീ വേഗതയിലും, നിറുത്തി നിറുത്തി പോവുകയാണെങ്കിൽ മണിക്കൂറിൽ 45 കി.മീ വേഗതയിലുമാണ് സഞ്ചരിക്കുന്നത്. എങ്കിൽ ഓരോ മണിക്കൂറിലും എത്ര മിനിറ്റാണ് തീവണ്ടി നിർത്താനായി ഉപയോഗിക്കുന്നത്?",
+            options: ["8 മിനിറ്റ്", "10 മിനിറ്റ്", "12 മിനിറ്റ്", "15 മിനിറ്റ്"],
+            correct: "10 മിനിറ്റ്"
+        },
+        {
+            id: 13,
+            q: "13. യഥാക്രമം 120 മീറ്ററും 80 മീറ്ററും നീളമുള്ള രണ്ട് തീവണ്ടികൾ 42 km/h, 30 km/h വേഗതയിൽ എതിർദിശയിൽ സഞ്ചരിക്കുന്നു. അവ പരസ്പരം കടന്നുപോകാൻ എത്ര സമയമെടുക്കും?",
+            options: ["10 സെക്കൻഡ്", "12 സെക്കൻഡ്", "15 സെക്കൻഡ്", "20 സെക്കൻഡ്"],
+            correct: "10 സെക്കൻഡ്"
+        },
+        {
+            id: 14,
+            q: "14. ഒരു തീവണ്ടി പ്ലാറ്റ്‌ഫോമിൽ നിൽക്കുന്ന ഒരാളെ 8 സെക്കൻഡ് കൊണ്ടും 264 മീറ്റർ നീളമുള്ള പ്ലാറ്റ്‌ഫോം 20 സെക്കൻഡ് കൊണ്ടും കടന്നുപോയി. എങ്കിൽ തീവണ്ടിയുടെ വേഗത എത്ര?",
+            options: ["50 km/h", "79.2 km/h", "60 km/h", "72 km/h"],
+            correct: "79.2 km/h"
+        },
+        {
+            id: 15,
+            q: "15. 240 മീറ്റർ നീളമുള്ള ഒരു തീവണ്ടി ഒരു പ്ലാറ്റ്‌ഫോം കടന്നുപോകാൻ 30 സെക്കൻഡ് എടുക്കുന്നു. തീവണ്ടിയുടെ വേഗത 72 km/h ആണെങ്കിൽ പ്ലാറ്റ്‌ഫോമിന്റെ നീളം എത്ര?",
+            options: ["300 മീറ്റർ", "360 മീറ്റർ", "400 മീറ്റർ", "600 മീറ്റർ"],
+            correct: "360 മീറ്റർ"
+        }
+    ];
+
+    // Game state variables
+    let poolQuestions = [...allQuestions]; // Current pool of questions for the round
+    let currentPoolIndex = 0; // Index in the current pool
+
+    // Round stats accumulation
+    let roundCorrect = 0;
+    let roundWrong = 0;
+    let roundSkipped = 0;
+
+    // Cumulative permanent history tracker (questions successfully answered in previous rounds)
+    let permanentCorrectCount = 0; 
+    let pendingNextRoundQuestions = []; // Stores questions that were failed or skipped in current round
+
+    // Shuffler for array elements (options display randomizer)
+    function shuffleArray(array) {
+        let cur = array.slice();
+        for (let i = cur.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cur[i], cur[j]] = [cur[j], cur[i]];
+        }
+        return cur;
+    }
+
+    // Start running a question
+    function loadQuestion() {
+        if (currentPoolIndex >= poolQuestions.length) {
+            // End of this active sub-round pool reached
+            showPreSubmitScreen();
+            return;
+        }
+
+        // Display update
+        document.getElementById("quiz-screen").classList.remove("hidden");
+        document.getElementById("presubmit-screen").classList.add("hidden");
+        document.getElementById("result-screen").classList.add("hidden");
+        document.getElementById("retry-screen").classList.add("hidden");
+        document.getElementById("success-screen").classList.add("hidden");
+
+        let qData = poolQuestions[currentPoolIndex];
+        
+        // Progress bar updates relative to current pool progress
+        let progressPercent = (currentPoolIndex / poolQuestions.length) * 100;
+        document.getElementById("progress-fill").style.width = progressPercent + "%";
+
+        // Injecting text
+        document.getElementById("question-text").innerText = qData.q;
+
+        // Render shuffled options buttons seamlessly without indicators
+        let shuffledOpts = shuffleArray(qData.options);
+        let optionsBox = document.getElementById("options-box");
+        optionsBox.innerHTML = "";
+
+        shuffledOpts.forEach(opt => {
+            let btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerText = opt;
+            btn.onclick = function() { handleAnswer(opt, qData); };
+            optionsBox.appendChild(btn);
+        });
+    }
+
+    function handleAnswer(selectedOpt, qData) {
+        if (selectedOpt === qData.correct) {
+            roundCorrect++;
+        } else {
+            roundWrong++;
+            pendingNextRoundQuestions.push(qData); // save to loop again
+        }
+        currentPoolIndex++;
+        loadQuestion();
+    }
+
+    function skipQuestion() {
+        let qData = poolQuestions[currentPoolIndex];
+        roundSkipped++;
+        pendingNextRoundQuestions.push(qData); // save to loop again
+        currentPoolIndex++;
+        loadQuestion();
+    }
+
+    function showPreSubmitScreen() {
+        document.getElementById("quiz-screen").classList.add("hidden");
+        document.getElementById("presubmit-screen").classList.remove("hidden");
+    }
+
+    function showResults() {
+        document.getElementById("presubmit-screen").classList.add("hidden");
+        document.getElementById("result-screen").classList.remove("hidden");
+
+        // Calculate metrics specified
+        // This round metrics + permanentCorrectCount from history
+        let totalCorrectShow = roundCorrect + permanentCorrectCount;
+        let totalWrongShow = roundWrong;
+        let totalSkippedShow = roundSkipped;
+
+        // Formula: 1 point per correct answer, -0.33 per wrong answer, 0 for skipped
+        let rawScore = (totalCorrectShow * 1) + (totalWrongShow * -0.33);
+        // Standard rounding limit display
+        let formattedScore = Number(rawScore.toFixed(2));
+
+        document.getElementById("res-correct").innerText = totalCorrectShow;
+        document.getElementById("res-wrong").innerText = totalWrongShow;
+        document.getElementById("res-skipped").innerText = totalSkippedShow;
+        document.getElementById("total-score").innerText = "ആകെ സ്കോർ: " + formattedScore;
+    }
+
+    function goToNextStep() {
+        document.getElementById("result-screen").classList.add("hidden");
+        
+        // Update historical records tracking before deciding paths
+        permanentCorrectCount += roundCorrect;
+
+        if (pendingNextRoundQuestions.length === 0) {
+            // No failed or skipped questions remaining in track. Total absolute victory.
+            document.getElementById("success-screen").classList.remove("hidden");
+        } else {
+            // Show opportunity screen to loop incorrect parts
+            document.getElementById("retry-screen").classList.remove("hidden");
+        }
+    }
+
+    function startNextRound() {
+        // Setup state to repeat only the leftover segment
+        poolQuestions = [...pendingNextRoundQuestions];
+        currentPoolIndex = 0;
+        
+        // Clear dynamic round statistics buffers safely
+        roundCorrect = 0;
+        roundWrong = 0;
+        roundSkipped = 0;
+        pendingNextRoundQuestions = [];
+
+        // Restart interaction loop
+        loadQuestion();
+    }
+
+    // Direct structural activation trigger on system build
+    window.onload = function() {
+        loadQuestion();
+    };
+</script>
+
+</body>
+</html>

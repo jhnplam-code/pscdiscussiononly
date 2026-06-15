@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ദ്വീപിലെ അതിജീവനം: PSC IT അഡ്വഞ്ചർ ക്വിസ്</title>
+    <style>
+        :root {
+            --bg-color: #1a2a3a;
+            --card-bg: #2c3e50;
+            --text-color: #ffffff;
+            --accent-color: #f1c40f;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --btn-bg: #34495e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            min-height: 100vh;
+            font-size: 24px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 3px solid var(--accent-color);
+        }
+
+        h1, h2 {
+            color: var(--accent-color);
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .story-box {
+            background: rgba(0,0,0,0.3);
+            padding: 25px;
+            border-left: 8px solid var(--accent-color);
+            margin-bottom: 30px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .question-box {
+            margin-bottom: 30px;
+            font-size: 28px;
+            background: #111;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .option-btn {
+            display: block;
+            background: var(--btn-bg);
+            color: white;
+            padding: 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 2px solid #455a64;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 26px;
+            font-weight: bold;
+            width: 100%;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background: var(--accent-color);
+            color: #000;
+            transform: scale(1.02);
+        }
+
+        .skip-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #bbb;
+            font-size: 22px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .skip-link:hover {
+            color: var(--accent-color);
+        }
+
+        .feedback-toast {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .toast-success {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success-color);
+            border: 2px solid var(--success-color);
+        }
+
+        .toast-error {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--error-color);
+            border: 2px solid var(--error-color);
+        }
+
+        .progress-bar {
+            background: #555;
+            height: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress {
+            background: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .level-indicator {
+            text-align: right;
+            font-size: 20px;
+            color: #aaa;
+            margin-top: -15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            display: inline-block;
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-submit { background: var(--accent-color); color: black; }
+        .btn-send { background: var(--success-color); }
+        .btn-cancel { background: var(--error-color); }
+        .btn-close { background: #7f8c8d; }
+
+        .score-table {
+            width: 100%;
+            margin: 30px 0;
+            border-collapse: collapse;
+            font-size: 24px;
+        }
+
+        .score-table th, .score-table td {
+            border: 1px solid #555;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .score-table th { background-color: #111; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="game-container"></div>
+
+<script>
+    const quizData = [
+        // Level 1: Easy (1-5)
+        {
+            q: "കമ്പ്യൂട്ടറിന്റെ പിതാവ് എന്നറിയപ്പെടുന്നത് ആര്?",
+            options: ["ചാൾസ് ബാബേജ്", "അലൻ ട്യൂറിങ്", "ജോൺ വോൺ ന്യൂമാൻ", "ബ്ലെയ്സ് പാസ്കൽ"],
+            answer: "ചാൾസ് ബാബേജ്",
+            task: "ദ്വീപിന്റെ വടക്കേ അറ്റത്തുള്ള ഒരു പഴയ തകർന്ന പെട്ടിക്കുള്ളിൽ കമ്പ്യൂട്ടറിന്റെ 'സി.പി.യു (CPU)' ഒളിപ്പിച്ചിട്ടുണ്ട്. അത് പുറത്തെടുക്കാനുള്ള സൂചനയ്ക്കായി താഴെ പറയുന്ന ചോദ്യത്തിന് ശരിയുത്തരം നൽകുക:"
+        },
+        {
+            q: "താഴെ പറയുന്നവയിൽ കമ്പ്യൂട്ടറിന്റെ മസ്തിഷ്കം എന്നറിയപ്പെടുന്നത് ഏതാണ്?",
+            options: ["CPU", "ALU", "RAM", "ROM"],
+            answer: "CPU",
+            task: "റേഡിയോ സംവിധാനത്തിന് വൈദ്യുതി നൽകാൻ ഒരു പഴയ സോളാർ പാനൽ കണ്ടെത്തേണ്ടതുണ്ട്. അത് കാട്ടുപൊന്തയ്ക്കുള്ളിൽ നിന്ന് കണ്ടುപിടിക്കാനുള്ള ടാസ്ക് ഇതാ:"
+        },
+        {
+            q: "ഒരു കമ്പ്യൂട്ടർ ഓൺ ചെയ്യുമ്പോൾ നടക്കുന്ന ആദ്യത്തെ പ്രക്രിയ ഏതാണ്?",
+            options: ["Booting", "Processing", "Saving", "Loading"],
+            answer: "Booting",
+            task: "ഉപകരണങ്ങളെ തമ്മിൽ ഘടിപ്പിക്കാനുള്ള കണക്റ്റിങ് കേബിളുകൾ ഒരു വലിയ പാറയിടുക്കിൽ ഒളിഞ്ഞിരിപ്പുണ്ട്. അത് കൈക്കലാക്കാൻ ഈ ചോദ്യം നേരിടുക:"
+        },
+        {
+            q: "താഴെ പറയുന്നവയിൽ ഒരു ഇൻപുട്ട് ഉപകരണം (Input Device) ഏതാണ്?",
+            options: ["കീബോർഡ്", "മോണിറ്റർ", "പ്രിന്റർ", "സ്പീക്കർ"],
+            answer: "കീബോർഡ്",
+            task: "റേഡിയോ സിഗ്നലുകൾ സ്വീകരിക്കാൻ ആവശ്യമായ ഒരു ആന്റിന മാസ്റ്റിന്റെ ഭാഗം കടൽത്തീരത്തെ മണലിൽ പൂഴ്ത്തിവെച്ചിരിക്കുന്നു. അത് കുഴിച്ചെടുക്കാനുള്ള വഴി ഇതാണ്:"
+        },
+        {
+            q: "താഴെ പറയുന്നവയിൽ ഏതാണ് ഒരു സ്റ്റോറേജ് ഉപകരണം?",
+            options: ["ഹാർഡ് ഡിസ്ക്", "പ്ലോട്ടിങ്", "മൗസ്", "സി.പി.യു"],
+            answer: "ഹാർഡ് ഡിസ്ക്",
+            task: "സിഗ്നൽ ട്രാൻസ്മിറ്റർ സർക്യൂട്ട് ബോർഡ് ഒരു വലിയ മരപ്പൊത്തിൽ സൂക്ഷിച്ചിരിക്കുന്നു. ഈ ആദ്യ ഘട്ടത്തിലെ അവസാന തടസ്സം മറികടക്കുക:"
+        },
+
+        // Level 2: Medium (6-10)
+        {
+            q: "ഇന്ത്യയിൽ നിർമ്മിച്ച ആദ്യത്തെ സൂപ്പർ കമ്പ്യൂട്ടർ ഏത്?",
+            options: ["PARAM 8000", "SAGA 220", "ANURAG", "PARAM YUVA"],
+            answer: "PARAM 8000",
+            task: "ഇനി ചോദ്യങ്ങളുടെ കാഠിന്യം കൂടുകയാണ്! റേഡിയോയുടെ ആംപ്ലിഫയർ ഭാഗം ചതുപ്പിലെ ഒരു പഴയ ബോട്ടിനുള്ളിലുണ്ട്. അവിടെയുള്ള ചതുപ്പ് ചീങ്കണ്ണികളിൽ നിന്ന് രക്ഷപെട്ട് അത് നേടാൻ ഈ ചോദ്യത്തിന് ഉത്തരം നൽകുക:"
+        },
+        {
+            q: "വേൾഡ് വൈഡ് വെബ് (WWW) കണ്ടുപിടിച്ചത് ആര്?",
+            options: ["ടിം ബെർണേഴ്സ് ലീ", "ബിൽ ഗേറ്റ്സ്", "വിൻഡ് സർഫ്", "സ്റ്റീവ് ജോബ്സ്"],
+            answer: "ടിം ബെർണേഴ്സ് ലീ",
+            task: "കമ്പ്യൂട്ടർ മോണിറ്ററിന്റെ ഡിസ്പ്ലേ ട്യൂബ് ഒരു ഗുഹയ്ക്കുള്ളിലെ വവ്വാലുകൾക്കിടയിലാണ് ഉള്ളത്. ഗുഹയ്ക്കുള്ളിലേക്ക് സുരക്ഷിതമായി പ്രവേശിക്കാൻ ഈ ഐ.ടി ചോദ്യം നിങ്ങളെ സഹായിക്കും:"
+        },
+        {
+            q: "ഒരു ബൈറ്റ് (Byte) എന്നാൽ എത്ര ബിറ്റുകൾ (Bits) കൂടിയതാണ്?",
+            options: ["8 ബിറ്റുകൾ", "4 ബിറ്റുകൾ", "16 ബിറ്റുകൾ", "1024 ബിറ്റുകൾ"],
+            answer: "8 ബിറ്റുകൾ",
+            task: "സിസ്റ്റത്തിന് ആവശ്യമായ കീബോർഡ് ഭാഗങ്ങൾ കാട്ടുതേനീച്ചക്കൂടിന് താഴെയാണ് ഉള്ളത്. പരിക്കേൽക്കാതെ അത് മാറ്റിയെടുക്കാൻ ഈ ടാസ്ക് പൂർത്തിയാക്കൂ:"
+        },
+        {
+            q: "ഇന്റർനെറ്റിന്റെ പിതാവ് എന്നറിയപ്പെടുന്നത് ആര്?",
+            options: ["വിന്റൺ സർഫ്", "ചാൾസ് ബാബേജ്", "ടിം ബെർണേഴ്സ് ലീ", "റേ ടോംലിൻസൺ"],
+            answer: "വിന്റൺ സർഫ്",
+            task: "സിഗ്നൽ ട്യൂൺ ചെയ്യാനുള്ള നോബുകൾ ഒരു പഴയ മൺപാത്രത്തിൽ അടച്ചുപിടിച്ചിരിക്കുന്നു. അത് പൊട്ടിച്ചു ഭാഗങ്ങൾ എടുക്കാൻ താഴെ പറയുന്ന ചോദ്യം ശരിയാക്കുക:"
+        },
+        {
+            q: "ഇലക്ട്രോണിക് മെയിൽ (Email) കണ്ടുപിടിച്ചത് ആര്?",
+            options: ["റേ ടോംലിൻസൺ", "സബീർ ഭാട്ടിയ", "മാർക്ക് സുക്കർബർഗ്", "ലാരി പേജ്"],
+            answer: "റേ ടോംലിൻസൺ",
+            task: "കമ്പ്യൂട്ടറിലേക്ക് പവർ എത്തിക്കുന്ന സ്വിച്ചുകൾ ഒരു വലിയ വെള്ളച്ചാട്ടത്തിന് പുറകിലെ പാറയിലാണ്. വെള്ളച്ചാട്ടം മുറിച്ചുകടക്കാൻ ഈ ശരിയുത്തരം അനിവാര്യമാണ്:"
+        },
+
+        // Level 3: Moderate (11-15)
+        {
+            q: "ഇന്ത്യയിലെ ആദ്യത്തെ സൈബർ ഫോറൻസിക് ലബോറട്ടറി നിലവിൽ വന്നത് എവിടെ?",
+            options: ["ത്രിപുര", "കേരളം", "മഹാരാഷ്ട്ര", "കർണാടക"],
+            answer: "ത്രിപുര",
+            task: "ടാസ്ക് 11: റേഡിയോയുടെ ഫ്രീക്വൻസി മോഡുലേറ്റർ ഒരു പഴയ വാച്ച് ടവറിന് മുകളിലാണ്. കാറ്റിൽ തകരാതെ അത് താഴെയിറക്കാൻ ഈ ചോദ്യത്തിന് ഉത്തരം നൽകൂ:"
+        },
+        {
+            q: "കമ്പ്യൂട്ടറിലെ താൽക്കാലിക മെമ്മറി (Volatile Memory) ഏതാണ്?",
+            options: ["RAM", "ROM", "Hard Disk", "Flash Drive"],
+            answer: "RAM",
+            task: "ടാസ്ക് 12: പ്രധാന മദർബോർഡിലേക്ക് കണക്ട് ചെയ്യേണ്ട റാം (RAM) ചിപ്പ് ഒരു പഴയ പീരങ്കിയുടെ ഉള്ളിൽ കുടുങ്ങിക്കിടക്കുകയാണ്. അത് പുറത്തെടുക്കാൻ ഇതാ ചോദ്യം:"
+        },
+        {
+            q: "കേരളത്തിലെ ആദ്യത്തെ സമ്പൂർണ്ണ കമ്പ്യൂട്ടർവൽകൃത പഞ്ചായത്ത് ഏത്?",
+            options: ["ചമ്രവട്ടം", "വെള്ളനാട്", "തഴക്കര", "മരുതോങ്കര"],
+            answer: "വെള്ളനാട്",
+            task: "ടാസ്ക് 13: റേഡിയോ റിസീവർ ഘടിപ്പിക്കാനുള്ള സ്ക്രൂകളും ടൂളുകളും കാട്ടാനക്കൂട്ടത്തിന്റെ താവളത്തിനടുത്താണ്. അവയെ പ്രകോപിപ്പിക്കാതെ അത് മാറ്റാൻ ഉത്തരം പറയുക:"
+        },
+        {
+            q: "ഇന്ത്യയിൽ ആദ്യമായി സൈബർ നിയമം (IT Act) നിലവിൽ വന്ന വർഷം ഏത്?",
+            options: ["2000", "2005", "1998", "2002"],
+            answer: "2000",
+            task: "ടാസ്ക് 14: വോൾട്ടേജ് നിയന്ത്രിക്കാനുള്ള സ്റ്റെബിലൈസർ ഭാഗം ദ്വീപിലെ ഒരു പഴയ ബങ്കറിനുള്ളിലാണ്. ബങ്കറിന്റെ ഡിജിറ്റൽ ലോക്ക് തുറക്കാനുള്ള കോഡ് ഈ ഉത്തരമാണ്:"
+        },
+        {
+            q: "ഒരു കമ്പ്യൂട്ടർ നെറ്റ്‌വർക്കിലെ പ്രധാന കമ്പ്യൂട്ടറിനെ വിളിക്കുന്ന പേര്?",
+            options: ["Server", "Client", "Node", "Router"],
+            answer: "Server",
+            task: "ടാസ്ക് 15: ശബ്ദം കേൾക്കാനുള്ള സ്പീക്കറിന്റെ ഡയഫ്രം ഒരു പഴയ കടൽക്കൊള്ളക്കാരുടെ പെട്ടിയിലാണ്. പെട്ടി തുറക്കാനുള്ള താക്കോൽ ഈ ചോദ്യത്തിന്റെ ഉത്തരമാണ്:"
+        },
+
+        // Level 4: Advanced (16-20)
+        {
+            q: "താഴെ പറയുന്നവയിൽ സോഷ്യൽ നെറ്റ്‌വർക്കിങ് സൈറ്റായ ഫേസ്ബുക്കിന്റെ സ്ഥാപകൻ ആര്?",
+            options: ["മാർക്ക് സുക്കർബർഗ്", "ജാക്ക് ഡോർസി", "ബിൽ ഗേറ്റ്സ്", "ജൂലിയൻ അസാൻജ്"],
+            answer: "മാർക്ക് സുക്കർബർഗ്",
+            task: "ടാസ്ക് 16: ചോദ്യങ്ങൾ കൂടുതൽ കഠിനമാകുന്നു! റേഡിയോ തരംഗങ്ങൾ പുറത്തുവിടാനുള്ള വെയർ ഹൗസ് ആന്റീനയുടെ കൺട്രോളർ ചതുപ്പിലെ താമരപ്പൊയ്കയിലാണ്. അത് വീണ്ടെടുക്കാൻ:"
+        },
+        {
+            q: "സൗജന്യ ഓപ്പൺ സോഴ്സ് ഓപ്പറേറ്റിംഗ് സിസ്റ്റത്തിന് ഉദാഹരണം ഏത്?",
+            options: ["Linux", "Windows 10", "macOS", "MS-DOS"],
+            answer: "Linux",
+            task: "ടാസ്ക് 17: സിസ്റ്റം പ്രോഗ്രാം ചെയ്യാനുള്ള സോഫ്റ്റ്‌വെയർ കോഡ് അടങ്ങിയ ഫ്ലോപ്പി ഡിസ്ക് ഒരു പഴയ മരപ്പൊത്തിൽ പാമ്പിന്റെ മാളത്തിനടുത്താണ്. സുരക്ഷിതമായി അത് മാറ്റാൻ:"
+        },
+        {
+            q: "ഗൂഗിളിന്റെ മാതൃ കമ്പനിയുടെ പേര് എന്താണ്?",
+            options: ["Alphabet Inc.", "Meta", "Microsoft", "Apple"],
+            answer: "Alphabet Inc.",
+            task: "ടാസ്ക് 18: वयർലെസ് കണക്ഷൻ നൽകാനുള്ള റൂട്ടർ ചിപ്പ് കടൽത്തീരത്തെ ഒരു തകർന്ന ലൈറ്റ്‌ഹൗസിന്റെ മുകളിലാണ്. ലൈറ്റ്‌ഹൗസ് കോണിപ്പടികൾ കയറാൻ ഈ ഉത്തരം വേണം:"
+        },
+        {
+            q: "കമ്പ്യൂട്ടറിലെ പിഴവുകളെ (Errors) പറയുന്ന പേര് എന്താണ്?",
+            options: ["Bug", "Virus", "Spam", "Bit"],
+            answer: "Bug",
+            task: "ടാസ്ക് 19: സിസ്റ്റത്തിന് ആവശ്യമായ കൂളിംഗ് ഫാൻ ഒരു പഴയ മിലിട്ടറി ട്രക്കിന്റെ എൻജിൻ ഭാഗത്ത് കുടുങ്ങിയിരിക്കുന്നു. അത് വേർപെടുത്താൻ താഴെ പറയുന്ന ചോദ്യം ശരിയാക്കുക:"
+        },
+        {
+            q: "താഴെ പറയുന്നവയിൽ ഒരു സെർച്ച് എൻജിൻ അല്ലാത്തത് ഏതാണ്?",
+            options: ["Safari", "Google", "Bing", "Yahoo"],
+            answer: "Safari",
+            task: "ടാസ്ക് 20: ഡിജിറ്റൽ ഡിസ്പ്ലേ പാനൽ കാട്ടുതീയിൽ പെടാതെ ഒരു കൽക്കുളത്തിനടിയിൽ സൂക്ഷിച്ചിരിക്കുന്നു. അത് വെള്ളത്തിൽ നിന്ന് മുക്കിയെടുക്കാനുള്ള ടാസ്ക് ഇതാ:"
+        },
+
+        // Level 5: High Advanced (21-25)
+        {
+            q: "ഇന്റർനെറ്റിലൂടെയുള്ള വാണിജ്യ ഇടപാടുകൾ അറിയപ്പെടുന്നത് എങ്ങനെ?",
+            options: ["E-Commerce", "E-Mail", "E-Governance", "E-Banking"],
+            answer: "E-Commerce",
+            task: "ടാസ്ക് 21: കഠിനമായ ഘട്ടത്തിലേക്ക് സ്വാഗതം! റേഡിയോയുടെ ഓഡിയോ ഐ.സി (Audio IC) കരിമ്പാറക്കൂട്ടങ്ങൾക്കിടയിലെ ഇടുങ്ങിയ ഗുഹയിലാണ്. അപകടം ഒഴിവാക്കി അത് നേടാൻ:"
+        },
+        {
+            q: "ആദ്യത്തെ കമ്പ്യൂട്ടർ വൈറസ് ഏതാണ്?",
+            options: ["Creeper", "Brain", "Trojan", "MyDoom"],
+            answer: "Creeper",
+            task: "ടാസ്ക് 22: മെയിൻ പവർ സപ്ലൈയുടെ ഫ്യൂസ് വയറുകൾ ദ്വീപിലെ ഒരു ഉപേക്ഷിക്കപ്പെട്ട ഖനിക്കുള്ളിലാണ്. ഖനിയിലെ വിഷവാതകം ഏൽക്കാതെ മുന്നോട്ട് പോകാൻ ഈ ഉത്തരം നൽകുക:"
+        },
+        {
+            q: "കേരള സർക്കാരിന്റെ ഔദ്യോഗിക വെബ് പോർട്ടൽ ഏതാണ്?",
+            options: ["kerala.gov.in", "keralait.org", "keralam.gov.in", "keralapolice.gov.in"],
+            answer: "kerala.gov.in",
+            task: "ടാസ്ക് 23: സിഗ്നൽ ദൂരേക്ക് അയക്കാനുള്ള ആംപ്ലിഫയർ ട്യൂബ് ഈറ്റക്കാടുകൾക്കുള്ളിൽ മറഞ്ഞിരിക്കുന്നു. കാട്ടുപന്നികളുടെ ആക്രമണം ഉണ്ടാകാതെ അത് കൈക്കലാക്കാൻ:"
+        },
+        {
+            q: "ഒരു വെബ്പേജ് നിർമ്മിക്കാൻ ഉപയോഗിക്കുന്ന അടിസ്ഥാന ഭാഷ ഏതാണ്?",
+            options: ["HTML", "Java", "C++", "Python"],
+            answer: "HTML",
+            task: "ടാസ്ക് 24: റേഡിയോ ഫ്രീക്വൻസി മാറ്റിമറിക്കാനുള്ള ക്രിസ്റ്റൽ ഓസിലേറ്റർ ഒരു പഴയ കോട്ടയുടെ അവശിഷ്ടങ്ങൾക്കിടയിലാണ്. കോട്ടയുടെ രഹസ്യ അറ തുറക്കാൻ ഈ ചോദ്യത്തിന് ഉത്തരം നൽകുക:"
+        },
+        {
+            q: "താഴെ പറയുന്നവയിൽ മാൽവെയറുകളിൽ (Malware) പൊത്താത്തത് ഏതാണ്?",
+            options: ["Firewall", "Virus", "Worm", "Trojan Horse"],
+            answer: "Firewall",
+            task: "ടാസ്ക് 25: കമ്പ്യൂട്ടറിലേക്ക് ഡാറ്റ നൽകാനുള്ള യു.എസ്.ബി പോർട്ടുകൾ ആഴമേറിയ ഒരു കിണറ്റിന്റെ അടിത്തട്ടിലാണ്. കയർ ഉപയോഗിച്ച് താഴെയിറങ്ങി അത് എടുക്കാൻ ഈ ചോദ്യം ശരിയാക്കുക:"
+        },
+
+        // Level 6: Expert (26-30)
+        {
+            q: "ഇന്ത്യയിലെ ആദ്യത്തെ സമ്പൂർണ്ണ ഡിജിറ്റൽ സംസ്ഥാനമായി പ്രഖ്യാപിക്കപ്പെട്ടത് ഏത്?",
+            options: ["കേരളം", "കർണാടക", "തമിഴ്നാട്", "മഹാരാഷ്ട്ര"],
+            answer: "കേരളം",
+            task: "ടാസ്ക് 26: ഇതാ അവസാനത്തെയും ഏറ്റവും കഠിനമേറിയതുമായ 5 ചോദ്യങ്ങൾ! റേഡിയോ ട്രാൻസ്മിറ്ററിന്റെ പ്രധാന ഹൃദയഭാഗമായ 'ട്രാൻസിസ്റ്റർ അറേ ചിപ്പ്' ദ്വീപിലെ ഏറ്റവും ഉയർന്ന അഗ്നിപർവ്വത മലനിരയുടെ മുകളിലാണ്. മല കയറാൻ ഈ കഠിന ചോദ്യത്തിന് ഉത്തരം നൽകുക:"
+        },
+        {
+            q: "ഐ.ടി ആക്ട് 2000 ലെ ഏത് വകുപ്പാണ് സ്ത്രീകളെ അപമാനിക്കുന്ന തരത്തിലുള്ള ദൃശ്യങ്ങൾ പ്രചരിപ്പിക്കുന്നതിനെതിരെയുള്ളത്?",
+            options: ["Section 67A", "Section 66A", "Section 70", "Section 65"],
+            answer: "Section 67A",
+            task: "ടാസ്ക് 27: റേഡിയോ സിഗ്നലുകളെ പുറംലോകത്തേക്ക് നയിക്കുന്ന പ്രധാന 'സിഗ്നൽ കോഡിങ് ഡിവൈസ്' ഒരു അടിയൊഴുക്കുള്ള അരുവിയിലെ വലിയ പാറയ്ക്കടിയിലാണ്. വെള്ളത്തിൽ ഒലിച്ചുപോകാതെ അത് വീണ്ടെടുക്കാൻ:"
+        },
+        {
+            q: "ഇന്റർനെറ്റിൽ ഒരു കമ്പ്യൂട്ടറിനെ സവിശേഷമായി തിരിച്ചറിയാൻ ഉപയോഗിക്കുന്ന വിലാസം ഏത്?",
+            options: ["IP Address", "MAC Address", "URL", "Host Name"],
+            answer: "IP Address",
+            task: "ടാസ്ക് 28: ഉപഗ്രഹങ്ങളുമായി ബന്ധം സ്ഥാപിക്കാനുള്ള 'സാറ്റലൈറ്റ് ലിങ്ക് കാർഡ്' ഇടിമിന്നലേറ്റു വീണ ഒരു ഭീമൻ മരത്തിന്റെ ഏറ്റവും മുകളിലെ കൊമ്പിലാണ്. സുരക്ഷിതമായി മരം കയറാൻ ഈ ചോദ്യം ശരിയാക്കുക:"
+        },
+        {
+            q: "സൈബർ കുറ്റകൃത്യങ്ങളെക്കുറിച്ച് പരാതി നൽകാനുള്ള ദേശീയ ഹെൽപ്പ് ലൈൻ നമ്പർ ഏതാണ്?",
+            options: ["1930", "1098", "112", "155260"],
+            answer: "1930",
+            task: "ടാസ്ക് 29: അവസാന ഘട്ടത്തിന്റെ തൊട്ടുമുൻപിലെത്തി! റേഡിയോ സിസ്റ്റത്തിലേക്ക് കമ്പ്യൂട്ടർ വഴി ഡാറ്റ ഫീഡ് ചെയ്യാനുള്ള 'ഫേംവെയർ ചിപ്പ്' ഒരു പഴയ തകർന്ന വിമാനത്തിന്റെ കോക്പിറ്റിൽ കുടുങ്ങിക്കിടക്കുകയാണ്. അത് വീണ്ടെടുക്കാൻ ഈ ചോദ്യം നേരിടുക:"
+        },
+        {
+            q: "കേരളത്തിൽ സൈബർ സെൽ ആസ്ഥാനം സ്ഥിതി ചെയ്യുന്നത് എവിടെയാണ്?",
+            options: ["തിരുവനന്തപുരം", "കൊച്ചി", "കോഴിക്കോട്", "തൃശ്ശൂർ"],
+            answer: "തിരുവനന്തപുരം",
+            task: "അവസാനത്തെ ടാസ്ക് (30): ഇതാ ദ്വീപിന്റെ കൺട്രോൾ റൂമിലെ രഹസ്യ സ്വിച്ച് ബോർഡ് നിങ്ങളുടെ മുന്നിലുണ്ട്. റേഡിയോ കമ്പ്യൂട്ടർ പൂർണ്ണമായി പ്രവർത്തനക്ഷമമാക്കാൻ ഈ അവസാനത്തെയും ഏറ്റവും കഠിനവുമായ PSC ചോദ്യത്തിന് കൃത്യമായ ഉത്തരം നൽകുക:"
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let scoreCorrect = 0;
+    let scoreWrong = 0;
+    let scoreSkipped = 0;
+    let isProcessing = false; // ഇരട്ട ക്ലിക്ക് തടയാൻ
+
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    function initGame() {
+        scoreCorrect = 0;
+        scoreWrong = 0;
+        scoreSkipped = 0;
+        currentQuestionIndex = 0;
+        isProcessing = false;
+
+        const container = document.getElementById('game-container');
+        container.innerHTML = `
+            <h1>ദ്വീപിലെ അതിജീവനം: PSC IT അഡ്വഞ്ചർ ഗെയിം ക്വിസ്</h1>
+            <div class="story-box" style="border-left-color: #e74c3c;">
+                🚨 അപകട മുന്നറിയിപ്പ്! <br><br>
+                നിങ്ങൾ സഞ്ചരിച്ച ഹെലികോപ്റ്റർ തകർന്ന് ഒരു നിഗൂഢ ദ്വീപിൽ അകപ്പെട്ടിരിക്കുകയാണ്! 
+                ഇവിടെ നിന്ന് പുറത്തുകടക്കാൻ അവിടുത്തെ പഴയ ഒരു <strong>'റേഡിയോ കമ്പ്യൂട്ടർ സംവിധാനം'</strong> പ്രവർത്തനക്ഷമമാക്കണം. <br><br>
+                ഓരോ ഭാഗവും കണ്ടെത്തുന്നതിനുള്ള സൂചന ലഭിക്കാൻ നിങ്ങൾ 30 ഐ.ടി ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകേണ്ടതുണ്ട്. ഓരോ ചോദ്യത്തിനും ഉത്തരം നൽകിയ ഉടൻ തന്നെ ഫലവും അടുത്ത ടാസ്കും മുന്നിലേക്ക് വരും. നിങ്ങൾക്ക് താല്പര്യമില്ലാത്ത ചോദ്യങ്ങൾ സ്കിപ്പ് ചെയ്യാനും സാധിക്കും.
+            </div>
+            <div style="text-align:center;">
+                <button class="btn-action btn-send" onclick="loadQuestion(0)">ഗെയിം ആരംഭിക്കാം &raquo;</button>
+            </div>
+        `;
+    }
+
+    function loadQuestion(index) {
+        currentQuestionIndex = index;
+        isProcessing = false;
+
+        if (index >= quizData.length) {
+            showSubmitScreen();
+            return;
+        }
+
+        const data = quizData[index];
+        const container = document.getElementById('game-container');
+        
+        let shuffledOptions = [...data.options];
+        shuffle(shuffledOptions);
+
+        const progressPercent = (index / quizData.length) * 100;
+        
+        let levelText = "ലെവൽ: തുടക്കക്കാരൻ (Easy)";
+        if(index >= 5 && index < 10) levelText = "ലെവൽ: ഇടത്തരം (Medium)";
+        if(index >= 10 && index < 15) levelText = "ലെവൽ: മോഡറേറ്റ് (Moderate)";
+        if(index >= 15 && index < 20) levelText = "ലെവൽ: അഡ്വാൻസ്ഡ് (Advanced)";
+        if(index >= 20 && index < 25) levelText = "ലെവൽ: ഹൈ അഡ്വാൻസ്ഡ് (High Advanced)";
+        if(index >= 25) levelText = "ലെവൽ: എക്സ്പെർട്ട് (Hardest)";
+
+        container.innerHTML = `
+            <h2>ടാസ്ക് ${index + 1} / 30</h2>
+            <div class="progress-bar">
+                <div class="progress" style="width: ${progressPercent}%;"></div>
+            </div>
+            <div class="level-indicator">${levelText}</div>
+
+            <div id="feedback-toast" class="feedback-toast"></div>
+
+            <div class="story-box">
+                📍 ടാസ്ക് വിവരണം:<br>
+                ${data.task}
+            </div>
+
+            <div class="question-box">
+                <strong>ചോദ്യം ${index + 1}:</strong> ${data.q}
+            </div>
+
+            <ul class="options-list">
+                ${shuffledOptions.map(opt => `
+                    <li>
+                        <button class="option-btn" onclick="handleAnswer('${opt.replace(/'/g, "\\'")}')">${opt}</button>
+                    </li>
+                `).join('')}
+            </ul>
+
+            <span class="skip-link" onclick="handleSkip()">skip ➔ ഈ ചോദ്യം സ്കിപ്പ് ചെയ്യുക</span>
+        `;
+    }
+
+    function handleAnswer(selectedOption) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        const data = quizData[currentQuestionIndex];
+        const toast = document.getElementById('feedback-toast');
+
+        if (selectedOption === data.answer) {
+            scoreCorrect++;
+            toast.className = "feedback-toast toast-success";
+            toast.innerHTML = "🎉 അത്യുഗ്രൻ! ശരിയുത്തരം. അടുത്ത ചോദ്യത്തിലേക്ക്...";
+        } else {
+            scoreWrong++;
+            toast.className = "feedback-toast toast-error";
+            toast.innerHTML = "⚠️ അയ്യോ തെറ്റായ ഉത്തരം! അടുത്ത ചോദ്യത്തിലേക്ക്...";
+        }
+        
+        toast.style.display = "block";
+
+        // 1.5 സെക്കന്റിന് ശേഷം തനിയെ അടുത്ത ചോദ്യത്തിലേക്ക് പോകുന്നു
+        setTimeout(() => {
+            loadQuestion(currentQuestionIndex + 1);
+        }, 1500);
+    }
+
+    function handleSkip() {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        scoreSkipped++;
+        const toast = document.getElementById('feedback-toast');
+        toast.className = "feedback-toast toast-error";
+        toast.style.backgroundColor = "rgba(255,255,255,0.1)";
+        toast.style.color = "#fff";
+        toast.style.border = "2px solid #fff";
+        toast.innerHTML = "➔ ചോദ്യം സ്കിപ്പ് ചെയ്തു. അടുത്ത ചോദ്യത്തിലേക്ക്...";
+        toast.style.display = "block";
+
+        setTimeout(() => {
+            loadQuestion(currentQuestionIndex + 1);
+        }, 1200);
+    }
+
+    function showSubmitScreen() {
+        const container = document.getElementById('game-container');
+        container.innerHTML = `
+            <h1>എല്ലാ ടാസ്കുകളും പൂർത്തിയായി!</h1>
+            <div class="story-box" style="border-left-color: var(--accent-color); text-align:center;">
+                📊 നിങ്ങൾ വിജയകരമായി 30 ടാസ്കുകൾ പിന്നിട്ടിരിക്കുന്നു. സ്കോർ വിവരങ്ങൾ കണക്കാക്കാൻ താഴെയുള്ള സബ്മിറ്റ് ബട്ടൺ അമർത്തുക.
+            </div>
+            <div style="text-align:center; margin-top: 40px;">
+                <button class="btn-action btn-submit" onclick="showScoreScreen()">📊 സ്കോർ സബ്മിറ്റ് ചെയ്യുക</button>
+            </div>
+        `;
+    }
+
+    function showScoreScreen() {
+        const container = document.getElementById('game-container');
+        container.innerHTML = `
+            <h1>നിങ്ങളുടെ സ്കോർ കാർഡ്</h1>
+            
+            <table class="score-table">
+                <tr>
+                    <th>വിവരം</th>
+                    <th>സ്കോർ</th>
+                </tr>
+                    <tr style="color: var(--success-color); font-weight:bold;">
+                    <td>ശരിയുത്തരങ്ങൾ</td>
+                    <td>${scoreCorrect}</td>
+                </tr>
+                <tr style="color: var(--error-color); font-weight:bold;">
+                    <td>തെറ്റുത്തരങ്ങൾ</td>
+                    <td>${scoreWrong}</td>
+                </tr>
+                <tr style="color: #bbb;">
+                    <td>സ്കിപ്പ് ചെയ്തവ</td>
+                    <td>${scoreSkipped}</td>
+                </tr>
+            </table>
+
+            <div class="story-box" style="border-left-color: #3498db;">
+                📧 ഈ സ്കോർ <strong>jhnpl.am1@gmail.com</strong> എന്ന മെയിൽ ഐഡിയിലേക്ക് അയക്കാൻ താഴെയുള്ള 'സെൻഡ്' ബട്ടൺ അമർത്തുക. താല്പര്യമില്ലെങ്കിൽ 'ക്യാൻസൽ' ചെയ്യാം.
+            </div>
+
+            <div style="text-align:center;">
+                <button class="btn-action btn-send" onclick="sendEmail()">📧 സ്കോർ സെൻഡ് ചെയ്യുക</button>
+                <button class="btn-action btn-cancel" onclick="showFinalOptions()">✖ ക്യാൻസൽ</button>
+            </div>
+        `;
+    }
+
+    function sendEmail() {
+        const email = "jhnpl.am1@gmail.com";
+        const subject = encodeURIComponent("PSC IT Adventure Game - Quiz Score");
+        const body = encodeURIComponent(
+            `ഹലോ,\n\nPSC IT അഡ്വഞ്ചർ ക്വിസ് മത്സരത്തിന്റെ ഫലം താഴെ നൽകുന്നു:\n\n` +
+            `• ശരിയായ ഉത്തരങ്ങൾ: ${scoreCorrect}\n` +
+            `• തെറ്റായ ഉത്തരങ്ങൾ: ${scoreWrong}\n` +
+            `• സ്കിപ്പ് ചെയ്ത ചോദ്യങ്ങൾ: ${scoreSkipped}\n\n` +
+            `നന്ദി!`
+        );
+        
+        // mailto വഴി ഇമെയിൽ ക്ലയന്റ് തുറക്കുന്നു
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        
+        // ഇമെയിൽ അയച്ച ശേഷം അടുത്ത ഓപ്ഷൻ കാണിക്കുന്നു
+        setTimeout(() => {
+            showFinalOptions();
+        }, 1000);
+    }
+
+    function showFinalOptions() {
+        const container = document.getElementById('game-container');
+        container.innerHTML = `
+            <h1>ഗെയിം അവസാനിച്ചു</h1>
+            <div class="story-box" style="border-left-color: var(--accent-color); text-align: center;">
+                ഇനി നിങ്ങൾ എന്താണ് ചെയ്യാൻ ആഗ്രഹിക്കുന്നത്?
+            </div>
+            <div style="text-align:center; margin-top:30px;">
+                <button class="btn-action btn-send" onclick="initGame()">🔄 ആദ്യം മുതൽ വീണ്ടും കളിക്കുക</button>
+                <button class="btn-action btn-close" onclick="closeGame()">🚪 ഗെയിം ക്ലോസ് ചെയ്യുക</button>
+            </div>
+        `;
+    }
+
+    function closeGame() {
+        const container = document.getElementById('game-container');
+        container.innerHTML = `
+            <h1>നന്ദി!</h1>
+            <div class="story-box" style="border-left-color: #7f8c8d; text-align: center;">
+                നിങ്ങൾ ക്വിസ് വിജയകരമായി പൂർത്തിയാക്കി വിട്ടുപോന്നിരിക്കുന്നു. താങ്കളുടെ PSC പരീക്ഷകൾക്ക് എല്ലാവിധ ആശംസകളും!
+            </div>
+        `;
+    }
+
+    window.onload = initGame;
+</script>
+
+</body>
+</html>

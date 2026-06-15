@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time & Work Interactive Quiz - Kerala PSC</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --container-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --primary-color: #1e3a8a;
+            --primary-hover: #111827;
+            --accent-color: #d97706;
+            --accent-hover: #b45309;
+            --correct-theme: #059669;
+            --wrong-theme: #dc2626;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Meera', 'Gayathri';
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background-color: var(--container-bg);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border: 3px solid var(--primary-color);
+        }
+
+        /* കാഴ്ച പരിമിതർക്കായി വലിയ അക്ഷരങ്ങൾ */
+        h2 {
+            font-size: 2rem;
+            line-height: 1.5;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            margin: 15px 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: left;
+            background-color: #f3f4f6;
+            border: 3px solid #d1d5db;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-color);
+        }
+
+        .btn:hover, .btn:focus {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .control-box {
+            margin-top: 30px;
+            border-top: 2px solid #e5e7eb;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .skip-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .skip-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .action-btn {
+            background-color: var(--correct-theme);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0 auto;
+        }
+
+        .action-btn:hover {
+            background-color: #047857;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .score-board {
+            font-size: 1.6rem;
+            line-height: 2;
+            margin-bottom: 30px;
+        }
+
+        .score-board span {
+            font-weight: bold;
+        }
+        
+        .progress-text {
+            font-size: 1.2rem;
+            color: #6b7280;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="quiz-page">
+        <div class="progress-text" id="progress-indicator">ചോദ്യം: 1 / 15</div>
+        <h2 id="question-text">ചോദ്യം ഇവിടെ കാണാം...</h2>
+        <div id="options-container">
+            </div>
+        <div class="control-box">
+            <button class="skip-btn" id="skip-button" onclick="skipQuestion()">Skip</button>
+        </div>
+    </div>
+
+    <div id="submit-page" class="hidden">
+        <h2>നിങ്ങൾ മുഴുവൻ ചോദ്യങ്ങളും പൂർത്തിയാക്കിയിരിക്കുന്നു!</h2>
+        <p style="font-size: 1.5rem;">നിങ്ങളുടെ സ്കോർ കാണാൻ താഴെ നൽകിയിരിക്കുന്ന സബ്മിറ്റ് ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.</p>
+        <button class="action-btn" onclick="showResults()">സബ്മിറ്റ് (Submit)</button>
+    </div>
+
+    <div id="result-page" class="hidden">
+        <h2>ഫലം (Quiz Result)</h2>
+        <div class="score-board">
+            <p>ആകെ ശരിയുത്തരങ്ങൾ: <span style="color: var(--correct-theme);" id="res-correct">0</span></p>
+            <p>ആകെ തെറ്റുത്തരങ്ങൾ: <span style="color: var(--wrong-theme);" id="res-wrong">0</span></p>
+            <p>സ്കിപ്പ് ചെയ്തവ: <span style="color: var(--accent-color);" id="res-skipped">0</span></p>
+            <hr>
+            <p style="font-size: 1.8rem;">ആകെ സ്കോർ: <span id="res-total">0</span> / 15</p>
+            <p style="font-size: 1.1rem; color: #6b7280;">(ശരിക്ക് 1 മാർക്ക്, തെറ്റിന് -0.33 നെഗറ്റീവ് മാർക്ക്)</p>
+        </div>
+        <button class="action-btn" style="background-color: var(--primary-color);" onclick="goToNextPhase()">ഓക്കെ (OK)</button>
+    </div>
+
+    <div id="retry-page" class="hidden">
+        <h2>തുടർന്നു കളിക്കാം!</h2>
+        <p style="font-size: 1.5rem; line-height: 1.6;">തെറ്റായതും സ്കിപ്പ് ചെയ്തതുമായ ചോദ്യങ്ങൾ മെച്ചപ്പെടുത്താൻ നിങ്ങൾക്ക് ഒരു അവസരം കൂടിയുണ്ട്. തയ്യാറാണെങ്കിൽ താഴെയുള്ള 'ലെറ്റ്സ് ഗോ' ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.</p>
+        <button class="action-btn" style="background-color: var(--accent-color);" onclick="startRetryPhase()">ലെറ്റ്സ് ഗോ (Let's Go)</button>
+    </div>
+
+    <div id="victory-page" class="hidden" style="text-align: center;">
+        <h2 style="color: var(--correct-theme); font-size: 2.5rem;">അഭിനന്ദനങ്ങൾ! 🎉</h2>
+        <p style="font-size: 1.8rem; font-weight: bold; line-height: 1.8;">നിങ്ങൾ എല്ലാ ചോദ്യങ്ങൾക്കും ശരിയുത്തരം കണ്ടെത്തിയിരിക്കുന്നു!</p>
+        <p style="font-size: 1.4rem; color: #4b5563;">നിങ്ങൾ ഈ ടോപ്പിക്ക് വിജയകരമായി പൂർത്തിയാക്കി.</p>
+    </div>
+</div>
+
+<script>
+    // 15 പ്രധാന PSC മോഡൽ ചോദ്യങ്ങൾ
+    const allQuestions = [
+        { id: 1, q: "A ഒരു ജോലി 10 ദിവസം കൊണ്ടും B അത് 15 ദിവസം കൊണ്ടും തീർക്കുമെങ്കിൽ രണ്ടുപേരും ചേർന്ന് ആ ജോലി എത്ര ദിവസം കൊണ്ട് തീർക്കും?", a: "6 ദിവസം", o: ["6 ദിവസം", "5 ദിവസം", "8 ദിവസം", "12 ദിവസം"] },
+        { id: 2, q: "A-യും B-യും ചേർന്ന് ഒരു ജോലി 6 ദിവസം കൊണ്ട് ചെയ്യും. A തനിച്ച് അത് 9 ദിവസം കൊണ്ട് ചെയ്യുമെങ്കിൽ B തനിച്ച് ആ ജോലി എത്ര ദിവസം കൊണ്ട് ചെയ്യും?", a: "18 ദിവസം", o: ["18 ദിവസം", "15 ദിവസം", "12 ദിവസം", "24 ദിവസം"] },
+        { id: 3, q: "12 പുരുഷന്മാർ ഒരു ജോലി 8 ദിവസം കൊണ്ട് ചെയ്യുമെങ്കിൽ, 16 പുരുഷന്മാർ അതേ ജോലി എത്ര ദിവസം കൊണ്ട് ചെയ്യും?", a: "6 ദിവസം", o: ["6 ദിവസം", "4 ദിവസം", "10 ദിവസം", "5 ദിവസം"] },
+        { id: 4, q: "A ഒരു ജോലി 12 ദിവസം കൊണ്ടും, B അത് 18 ദിവസം കൊണ്ടും, C അത് 36 ദിവസം കൊണ്ടും ചെയ്യുമെങ്കിൽ മൂവരും ചേർന്ന് ആ ജോലി എത്ര ദിവസം കൊണ്ട് തീർക്കും?", a: "6 ദിവസം", o: ["6 ദിവസം", "8 ദിവസം", "9 ദിവസം", "5 ദിവസം"] },
+        { id: 5, q: "A-യ്ക്ക് ബി-യേക്കാൾ ഇരട്ടി ജോലി ചെയ്യാനുള്ള ശേഷിയുണ്ട്. രണ്ടുപേരും ചേർന്ന് ഒരു ജോലി 14 ദിവസം കൊണ്ട് തീർക്കുമെങ്കിൽ A തനിച്ച് ആ ജോലി എത്ര ദിവസം കൊണ്ട് തീർക്കും?", a: "21 ദിവസം", o: ["21 ദിവസം", "28 ദിവസം", "42 ദിവസം", "35 ദിവസം"] },
+        { id: 6, q: "20 ആളുകൾ ദിവസം 8 മണിക്കൂർ ജോലി ചെയ്ത് ഒരു ജോലി 15 ദിവസം കൊണ്ട് തീർക്കുന്നു. എങ്കിൽ 25 ആളുകൾ ദിവസം 6 മണിക്കൂർ ജോലി ചെയ്താൽ എത്ര ദിവസം കൊണ്ട് തീരും?", a: "16 ദിവസം", o: ["16 ദിവസം", "12 ദിവസം", "20 ദിവസം", "180 ദിവസം"] },
+        { id: 7, q: "A ഒരു ജോലി 20 ദിവസം കൊണ്ടും B അത് 30 ദിവസം കൊണ്ടും ചെയ്യും. അവർ ഒന്നിച്ച് ജോലി തുടങ്ങി 5 ദിവസത്തിന് ശേഷം A ജോലി നിർത്തിപ്പോയാൽ ബാക്കി ജോലി B എത്ര ദിവസം കൊണ്ട് തീർക്കും?", a: "17 ദിവസം", o: ["17 ദിവസം", "15 ദിവസം", "12 ദിവസം", "25 ദിവസം"] },
+        { id: 8, q: "10 പച്ചകുതിരകൾ 10 ദിവസം കൊണ്ട് 10 ഇലകൾ തിന്നു തീർക്കുമെങ്കിൽ, 1 പച്ചകുതിര 1 ഇല തിന്നാൻ എത്ര ദിവസം എടുക്കും?", a: "10 ദിവസം", o: ["10 ദിവസം", "1 ദിവസം", "100 ദിവസം", "5 ദിവസം"] },
+        { id: 9, q: "A-യും B-യും ചേർന്ന് 12 ദിവസം കൊണ്ടും, B-യും C-യും ചേർന്ന് 15 ദിവസം കൊണ്ടും, C-യും A-യും ചേർന്ന് 20 ദിവസം കൊണ്ടും ഒരു ജോലി ചെയ്യുമെങ്കിൽ മൂവരും ചേർന്ന് എത്ര ദിവസം കൊണ്ട് ചെയ്യും?", a: "10 ദിവസം", o: ["10 ദിവസം", "8 ദിവസം", "12 ദിവസം", "6 ദിവസം"] },
+        { id: 10, q: "ഒരു ക്യാമ്പിൽ 120 ആളുകൾക്ക് 30 ദിവസത്തേക്കുള്ള ഭക്ഷണമുണ്ട്. 5 ദിവസത്തിന് ശേഷം 20 ആളുകൾ ക്യാമ്പ് വിട്ടുപോയാൽ ബാക്കി ഭക്ഷണം എത്ര ദിവസത്തേക്ക് തികയും?", a: "30 ദിവസം", o: ["30 ദിവസം", "25 ദിവസം", "35 ദിവസം", "40 ദിവസം"] },
+        { id: 11, q: "A ഒരു ജോലി 15 ദിവസം കൊണ്ട് ചെയ്യും. B, A-യേക്കാൾ 50% കൂടുതൽ കാര്യക്ഷമതയുള്ളയാളാണെങ്കിൽ B തനിച്ച് ആ ജോലി എത്ര ദിവസം കൊണ്ട് ചെയ്യും?", a: "10 ദിവസം", o: ["10 ദിവസം", "12 ദിവസം", "7.5 ദിവസം", "8 ദിവസം"] },
+        { id: 12, q: "4 പുരുഷന്മാരോ അല്ലെങ്കിൽ 6 സ്ത്രീകളോ ഒരു ജോലി 20 ദിവസം കൊണ്ട് ചെയ്യുമെങ്കിൽ, 6 പുരുഷന്മാരും 11 സ്ത്രീകളും ചേർന്ന് ആ ജോലി എത്ര ദിവസം കൊണ്ട് തീർക്കും?", a: "6 ദിവസം", o: ["6 ദിവസം", "7 ദിവസം", "8 ദിവസം", "5 ദിവസം"] },
+        { id: 13, q: "A-യ്ക്ക് ഒരു ജോലി ചെയ്യാൻ B-യേക്കാൾ 6 ദിവസം കുറവ് മതി. രണ്ടുപേരും ചേർന്ന് ആ ജോലി 4 ദിവസം കൊണ്ട് തീർക്കുമെങ്കിൽ B തനിച്ച് എത്ര ദിവസം കൊണ്ട് തീർക്കും?", a: "12 ദിവസം", o: ["12 ദിവസം", "10 ദിവസം", "8 ദിവസം", "6 ദിവസം"] },
+        { id: 14, q: "ഒരു പൈപ്പ് ഉപയോഗിച്ച് ഒരു ടാങ്ക് 6 മണിക്കൂർ കൊണ്ട് നിറയ്ക്കാം. മറ്റൊരു പൈപ്പ് വഴി ടാങ്ക് 9 മണിക്കൂർ കൊണ്ട് ശൂന്യമാക്കാം. രണ്ട് പൈപ്പും ഒരേസമയം തുറന്നാൽ ശൂന്യമായ ടാങ്ക് നിറയാൻ എത്ര സമയം വേണം?", a: "18 മണിക്കൂർ", o: ["18 മണിക്കൂർ", "15 മണിക്കൂർ", "12 മണിക്കൂർ", "3.5 മണിക്കൂർ"] },
+        { id: 15, q: "A, B എന്നിവർ ഒരു ജോലി യഥാക്രമം 9, 12 ദിവസങ്ങളിൽ ചെയ്യും. അവർ മാറിമാറി (Alternately) ഓരോ ദിവസം ജോലി ചെയ്യുകയും ജോലി A തുടങ്ങുകയും ചെയ്താൽ ആകെ എത്ര ദിവസത്തിൽ ജോലി തീരും?", a: "10 1/4 ദിവസം", o: ["10 1/4 ദിവസം", "10 1/2 ദിവസം", "9 3/4 ദിവസം", "11 ദിവസം"] }
+    ];
+
+    // ഗെയിം സ്റ്റേറ്റ് വേരിയബിളുകൾ
+    let currentPool = [...allQuestions]; // നിലവിലെ ഘട്ടത്തിൽ ചെയ്യാനുള്ള ചോദ്യങ്ങൾ
+    let currentIndex = 0;
+
+    // സ്കോറിംഗ് ട്രാക്കറുകൾ
+    let globalCorrectCount = 0;
+    let globalWrongCount = 0;
+    let globalSkippedCount = 0;
+
+    let stageCorrect = 0;
+    let stageWrong = 0;
+    let stageSkipped = 0;
+
+    let nextRetryPool = []; // തെറ്റിയവയും സ്കിപ്പ് ചെയ്തവയും ഇതിലേക്ക് മാറ്റും
+
+    // ക്വിസ് ആരംഭിക്കുന്നു
+    function startQuiz() {
+        currentIndex = 0;
+        stageCorrect = 0;
+        stageWrong = 0;
+        stageSkipped = 0;
+        nextRetryPool = [];
+        showQuestion();
+    }
+
+    // ചോദ്യം പേജിൽ കാണിക്കുന്ന ഫങ്ക്ഷൻ
+    function showQuestion() {
+        if (currentIndex >= currentPool.length) {
+            // ഈ ഘട്ടത്തിലെ ചോദ്യങ്ങൾ തീർന്നു
+            document.getElementById('quiz-page').classList.add('hidden');
+            document.getElementById('submit-page').classList.remove('hidden');
+            return;
+        }
+
+        const qObj = currentPool[currentIndex];
+        
+        // പ്രോഗ്രസ്സ് ഇൻഡിക്കേറ്റർ (ഉദാഹരണത്തിന്: ചോദ്യം 3 / 15)
+        document.getElementById('progress-indicator').innerText = `ചോദ്യം: ${currentIndex + 1} / ${currentPool.length}`;
+        document.getElementById('question-text').innerText = qObj.q;
+
+        // ഓപ്ഷനുകൾ മിക്സ് ചെയ്ത് കാണിക്കുന്നു (ഒരേ സ്ഥാനത്ത് വരാതിരിക്കാൻ)
+        const shuffledOptions = shuffleArray([...qObj.o]);
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+
+        shuffledOptions.forEach(opt => {
+            const button = document.createElement('button');
+            button.className = 'btn';
+            button.innerText = opt;
+            button.onclick = () => checkAnswer(opt, qObj);
+            optionsContainer.appendChild(button);
+        });
+    }
+
+    // ഉത്തരം പരിശോധിക്കുന്ന ഫങ്ക്ഷൻ
+    function checkAnswer(selectedOption, qObj) {
+        if (selectedOption === qObj.a) {
+            stageCorrect++;
+        } else {
+            stageWrong++;
+            nextRetryPool.push(qObj); // തെറ്റിയതിനാൽ അടുത്ത റൗണ്ടിലേക്ക് മാറ്റുന്നു
+        }
+        currentIndex++;
+        showQuestion();
+    }
+
+    // ചോദ്യം സ്കിപ്പ് ചെയ്യുമ്പോൾ
+    function skipQuestion() {
+        stageSkipped++;
+        nextRetryPool.push(currentPool[currentIndex]); // സ്കിപ്പ് ചെയ്തതിനാൽ അടുത്ത റൗണ്ടിലേക്ക് മാറ്റുന്നു
+        currentIndex++;
+        showQuestion();
+    }
+
+    // സബ്മിറ്റ് ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ സ്കോർ കണക്കാക്കുന്നു
+    function showResults() {
+        document.getElementById('submit-page').classList.add('hidden');
+        document.getElementById('result-page').classList.remove('hidden');
+
+        // ആകെ സ്കോർ വിവരങ്ങൾ അപ്ഡേറ്റ് ചെയ്യുന്നു
+        globalCorrectCount += stageCorrect;
+        globalWrongCount += stageWrong;
+        globalSkippedCount += stageSkipped;
+
+        // നെഗറ്റീവ് മാർക്ക് കണക്കാക്കൽ: ശരിക്ക് 1, തെറ്റിന് -0.33
+        let rawScore = (globalCorrectCount * 1) + (globalWrongCount * -0.33);
+        let finalScore = Math.max(0, rawScore).toFixed(2); // നെഗറ്റീവ് ടോട്ടൽ വരാതിരിക്കാൻ പൂജ്യത്തിൽ ക്ലിപ്പ് ചെയ്യുന്നു
+        
+        // ദശാംശം ഇല്ലെങ്കിൽ പൂർണ്ണസംഖ്യയാക്കുക
+        if(finalScore.endsWith('.00')) {
+            finalScore = Math.floor(finalScore);
+        }
+
+        document.getElementById('res-correct').innerText = globalCorrectCount;
+        document.getElementById('res-wrong').innerText = globalWrongCount;
+        document.getElementById('res-skipped').innerText = globalSkippedCount;
+        document.getElementById('res-total').innerText = finalScore;
+    }
+
+    // ഓക്കെ ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ അടുത്ത പേജിലേക്ക് പോകുന്നു
+    function goToNextPhase() {
+        document.getElementById('result-page').classList.add('hidden');
+        
+        if (nextRetryPool.length === 0) {
+            // എല്ലാ ചോദ്യങ്ങളും ശരിയാക്കി കഴിഞ്ഞാൽ
+            document.getElementById('victory-page').classList.remove('hidden');
+        } else {
+            // ഇനിയും ചോദ്യങ്ങൾ ബാക്കിയുണ്ടെങ്കിൽ റിട്രൈ പേജിലേക്ക്
+            document.getElementById('retry-page').classList.remove('hidden');
+        }
+    }
+
+    // ലെറ്റ്സ് ഗോ ക്ലിക്ക് ചെയ്യുമ്പോൾ തെറ്റിയവ വെച്ച് വീണ്ടും തുടങ്ങുന്നു
+    function startRetryPhase() {
+        document.getElementById('retry-page').classList.add('hidden');
+        document.getElementById('quiz-page').classList.remove('hidden');
+        
+        // പഴയ ശരിയുത്തരങ്ങൾ നിലനിർത്തി തെറ്റിയവ മാത്രം പുതിയ പൂളാക്കുന്നു
+        currentPool = [...nextRetryPool];
+        
+        // ഈ റൗണ്ടിലെ സ്കോറുകൾ റീസെറ്റ് ചെയ്യുന്നു (ഗ്ലോബൽ സ്കോറിൽ പഴയ ശരിയുത്തരങ്ങൾ ഉണ്ട്)
+        stageCorrect = 0;
+        stageWrong = 0;
+        stageSkipped = 0;
+        
+        // എന്നാൽ ടോട്ടൽ കാൽക്കുലേഷന് വേണ്ടി പഴയ തെറ്റും സ്കിപ്പും റീസെറ്റ് ചെയ്യുന്നു
+        globalWrongCount = 0;
+        globalSkippedCount = 0;
+
+        currentIndex = 0;
+        nextRetryPool = [];
+        showQuestion();
+    }
+
+    // ഓപ്ഷനുകൾ റാൻഡം ആയി മാറ്റാനുള്ള ഫങ്ക്ഷൻ (Fisher-Yates Shuffle)
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // ക്വിസ് ലോഡ് ചെയ്യുമ്പോൾ തുടങ്ങുന്നു
+    window.onload = startQuiz;
+</script>
+
+</body>
+</html>

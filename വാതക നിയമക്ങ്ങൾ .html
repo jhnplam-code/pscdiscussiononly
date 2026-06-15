@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ഫിസിക്സ് ക്വിസ് ഗെയിം: വാതക നിയമങ്ങൾ (Gas Laws)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Uthara', 'Gayathri', 'Manjari', 'Meera', sans-serif, Arial;
+        }
+        body {
+            background-color: #eef2f7;
+            color: #2c3e50;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 800px;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-top: 8px solid #2980b9;
+        }
+        h1 {
+            color: #2980b9;
+            text-align: center;
+            font-size: 28pt;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 15px;
+            width: 100%;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: #27ae60;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .info-text {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #7f8c8d;
+        }
+        .question-text {
+            font-size: 22pt;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #1a252f;
+        }
+        /* ഓപ്ഷനുകൾ എപ്പോഴും താഴെ താഴെയായി വരാൻ ഈ ഭാഗം മാറ്റിയിട്ടുണ്ട് */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+        .btn-option {
+            background-color: #f8f9fa;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            padding: 18px 25px;
+            font-size: 18pt;
+            text-align: left;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .btn-option:hover {
+            background-color: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            gap: 15px;
+        }
+        .btn-action {
+            padding: 15px 30px;
+            font-size: 18pt;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-skip {
+            background-color: #f39c12;
+            color: white;
+        }
+        .btn-skip:hover {
+            background-color: #d35400;
+        }
+        .btn-submit {
+            background-color: #27ae60;
+            color: white;
+            width: 100%;
+            padding: 20px;
+            font-size: 20pt;
+        }
+        .btn-submit:hover {
+            background-color: #219653;
+        }
+        .btn-primary {
+            background-color: #2980b9;
+            color: white;
+            padding: 15px 40px;
+            font-size: 18pt;
+        }
+        .btn-primary:hover {
+            background-color: #1f6391;
+        }
+        .result-box {
+            background-color: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            font-size: 18pt;
+            line-height: 2;
+        }
+        .score-highlight {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #c0392b;
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #fadbd8;
+            border-radius: 8px;
+        }
+        .center-content {
+            text-align: center;
+        }
+        .congrats-box {
+            border: 3px solid #27ae60;
+            background-color: #e8f8f5;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .congrats-title {
+            color: #27ae60;
+            font-size: 28pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="game-screen">
+        <div class="info-text">ചോദ്യം: <span id="current-question-num">1</span> / <span id="total-pool-num">30</span></div>
+        <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <div id="question-text" class="question-text">ചോദ്യം ഇവിടെ വരും...</div>
+        <div id="options-container" class="options-container"></div>
+        <div class="button-group">
+            <div></div> <button id="skip-btn" class="btn-action btn-skip" onclick="skipQuestion()">ഈ ചോദ്യം സ്കിപ്പ് ചെയ്യുക</button>
+        </div>
+    </div>
+
+    <div id="submit-screen" class="hidden center-content">
+        <div class="question-text" style="color: #2c3e50;">നിങ്ങൾ മുഴുവൻ ചോദ്യങ്ങളും പൂർത്തിയാക്കിയിരിക്കുന്നു. നിങ്ങളുടെ സ്കോർ കാണാൻ താഴെ നൽകിയിരിക്കുന്ന സബ്മിറ്റ് ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.</div>
+        <button class="btn-action btn-submit" onclick="showScoreboard()">സബ്മിറ്റ് (Submit)</button>
+    </div>
+
+    <div id="score-screen" class="hidden">
+        <h1>ക്വിസ് ഫലം (Quiz Result)</h1>
+        <div class="result-box">
+            <div>✅ ആകെ ശരിയുത്തരങ്ങൾ: <span id="res-correct" style="font-weight:bold; color:#27ae60;">0</span></div>
+            <div>❌ ആകെ തെറ്റുത്തരങ്ങൾ: <span id="res-wrong" style="font-weight:bold; color:#c0392b;">0</span></div>
+            <div>⏭️ സ്കിപ്പ് ചെയ്തവ: <span id="res-skipped" style="font-weight:bold; color:#f39c12;">0</span></div>
+            <div id="total-score-box" class="score-highlight">ആകെ ലഭിച്ച സ്കോർ: <span id="res-score">0</span></div>
+        </div>
+        <div class="center-content">
+            <button class="btn-action btn-primary" onclick="goToNextPhasePrompt()">ഓക്കെ (OK)</button>
+        </div>
+    </div>
+
+    <div id="retry-prompt-screen" class="hidden center-content">
+        <div class="question-text">തെറ്റുത്തരങ്ങൾ ശരിയാക്കുന്നതിന് ഒരവസരം കൂടെ വേണമെങ്കിൽ അതിന് തയ്യാറാണെങ്കിൽ താഴെയുള്ള 'ലെറ്റ്സ് ഗോ' ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.</div>
+        <button class="btn-action btn-submit" style="background-color: #2980b9;" onclick="startNextGameRound()">ലെറ്റ്സ് ഗോ (Let's Go)</button>
+    </div>
+
+    <div id="victory-screen" class="hidden">
+        <div class="congrats-box">
+            <div class="congrats-title">🎉 അഭിനന്ദനങ്ങൾ! 🎉</div>
+            <div class="question-text" style="color: #27ae60; margin-bottom: 0;">നിങ്ങൾ എല്ലാ ചോദ്യങ്ങൾക്കും ശരിയുത്തരം കണ്ടെത്തിയിരിക്കുന്നു! വിജയകരമായി ഗെയിം പൂർത്തിയാക്കി.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Full dataset of 30 Kerala PSC Gas Laws questions
+    const allQuestions = [
+        { id: 1, q: "സ്ഥിര താപനിലയിൽ ഒരു വാതകത്തിന്റെ വ്യാപ്തവും മർദ്ദവും തമ്മിലുള്ള ബന്ധം പ്രസ്താവിക്കുന്ന നിയമം ഏതാണ്?", a: "ബോയിൽ നിയമം", o: ["ബോയിൽ നിയമം", "ചാൾസ് നിയമം", "അവോഗാഡ്രോ നിയമം", "ഗേ ലൂസാക് നിയമം"] },
+        { id: 2, q: "സ്ഥിര മർദ്ദത്തിൽ ഒരു വാതകത്തിന്റെ വ്യാപ്തവും താപനിലയും തമ്മിലുള്ള ബന്ധം വ്യക്തമാക്കുന്ന നിയമം ഏത്?", a: "ചാൾസ് നിയമം", o: ["ബോയിൽ നിയമം", "ചാൾസ് നിയമം", "അവോഗാഡ്രോ നിയമം", "ഡാൾട്ടന്റെ ഭാഗിക മർദ്ദ നിയമം"] },
+        { id: 3, q: "താപനിലയും മർദ്ദവും സ്ഥിരമായിരിക്കുമ്പോൾ, തുല്യ വ്യാപ്തമുള്ള എല്ലാ വാതകങ്ങളിലും അടങ്ങിയിരിക്കുന്ന തന്മാത്രകളുടെ എണ്ണം തുല്യമായിരിക്കും എന്ന് പ്രസ്താവിക്കുന്ന നിയമം?", a: "അവോഗാഡ്രോ നിയമം", o: ["ഗേ ലൂസാക് നിയമം", "ബോയിൽ നിയമം", "അവോഗാഡ്രോ നിയമം", "ചാൾസ് നിയമം"] },
+        { id: 4, q: "ഒരു അക്വേറിയത്തിന്റെ അടിത്തട്ടിൽ നിന്നും മുകളിലേക്ക് ഉയരുന്ന വായുകുമിളകളുടെ വലിപ്പം കൂടി വരാൻ കാരണമായ വാതക നിയമം ഏതാണ്?", a: "ബോയിൽ നിയമം", o: ["ചാൾസ് നിയമം", "ബോയിൽ നിയമം", "അവോഗാഡ്രോ നിയമം", "ഗേ ലൂസാക് നിയമം"] },
+        { id: 5, q: "ആദർശ വാതക സമവാക്യം (Ideal Gas Equation) താഴെ പറയുന്നവയിൽ ഏതാണ്?", a: "PV = nRT", o: ["PV = nRT", "P1V1 = P2V2", "V1/T1 = V2/T2", "P = T"] },
+        { id: 6, q: "ഉയർന്ന താപനിലയിലും താഴ്ന്ന മർദ്ദത്തിലും യഥാർത്ഥ വാതകങ്ങൾ (Real Gases) ഏതു വാതകത്തെപ്പോലെയാണ് പെരുമാറുന്നത്?", a: "ആദർശ വാതകം (Ideal Gas)", o: ["ഉൽകൃഷ്ട വാതകങ്ങൾ", "ആദർശ വാതകം (Ideal Gas)", "ദ്രവീകൃത വാതകം", "ഹരിതഗൃഹ വാതകം"] },
+        { id: 7, q: "ഒരു നിശ്ചിത വ്യാപ്തമുള്ള അടച്ചുപൂട്ടിയ പാത്രത്തിലെ വാതകത്തെ ചൂടാക്കുമ്പോൾ അതിന്റെ മർദ്ദം കൂടുന്നു. ഇത് ഏത് നിയമവുമായി ബന്ധപ്പെട്ടിരിക്കുന്നു?", a: "ഗേ ലൂസാക് നിയമം", o: ["ബോയിൽ നിയമം", "ഗേ ലൂസാക് നിയമം", "ചാൾസ് നിയമം", "അവോഗാഡ്രോ നിയമം"] },
+        { id: 8, q: "ഏത് താപനിലയിലാണ് ഒരു ആദർശ വാതകത്തിന്റെ വ്യാപ്തം സിദ്ധാന്തപരമായി പൂജ്യം (Zero) ആകുന്നത്?", a: "-273.15°C", o: ["0°C", "-273.15°C", "100°C", "273 K"] },
+        { id: 9, q: "ഒരു ബലൂൺ വെയിലത്ത് വെക്കുമ്പോൾ അത് വികസിച്ചു പൊട്ടിപ്പോകാൻ കാരണമാകുന്ന വാതക നിയമം ഏതാണ്?", a: "ചാൾസ് നിയമം", o: ["ബോയിൽ നിയമം", "ചാൾസ് നിയമം", "അവോഗാഡ്രോ നിയമം", "ഡാൾട്ടൻ നിയമം"] },
+        { id: 10, q: "എസ്.ടി.പി.യിൽ (STP) ഏത് വാതകത്തിന്റെയും ഒരു മോളിന്റെ വ്യാപ്തം എത്രയായിരിക്കും (മോളാർ വ്യാപ്തം)?", a: "22.4 ലിറ്റർ", o: ["11.2 ലിറ്റർ", "22.4 ലിറ്റർ", "44.8 ലിറ്റർ", "1 ലിറ്റർ"] },
+        { id: 11, q: "താഴെ പറയുന്നവയിൽ ബോയിൽ നിയമത്തിന്റെ ഗണിതരൂപം ഏതാണ്?", a: "P x V = constant", o: ["P x V = constant", "V / T = constant", "P / T = constant", "V / n = constant"] },
+        { id: 12, q: "ചാൾസ് നിയമത്തിൽ സ്ഥിരമായി നിലനിൽക്കുന്ന ഘടകം ഏതാണ്?", a: "മർദ്ദം", o: ["താപനില", "മർദ്ദം", "വ്യാപ്തം", "പിണ്ഡവും മർദ്ദവും"] },
+        { id: 13, q: "വാതക മർദ്ദത്തിന്റെ അന്താരാഷ്ട്ര യൂണിറ്റ് (SI Unit) ഏതാണ്?", a: "പാസ്കൽ (Pascal)", o: ["പാസ്കൽ (Pascal)", "ന്യൂട്ടൺ", "ജൂൾ", "അന്തരീക്ഷ മർദ്ദം"] },
+        { id: 14, q: "വാതകങ്ങളുടെ വിसरण നിരക്കും (Rate of diffusion) അവയുടെ സാന്ദ്രതയും തമ്മിലുള്ള ബന്ധം വ്യക്തമാക്കുന്ന നിയമം?", a: "ഗ്രഹാം നിയമം", o: ["BOYL നിയമം", "ഡാൾട്ടൻ നിയമം", "ഗ്രഹാം നിയമം", "ചാൾസ് നിയമം"] },
+        { id: 15, q: "അന്യോന്യം രാസപ്രവർത്തനത്തിൽ ഏർപ്പെടാത്ത വാതകങ്ങളുടെ മിശ്രിതത്തിന്റെ ആകെ മർദ്ദം, അതിലെ ഓരോ വാതകങ്ങളുടെയും ഭാഗിക മർദ്ദങ്ങളുടെ തുകയായിരിക്കും എന്ന് പ്രസ്താവിച്ച ശാസ്ത്രജ്ഞൻ?", a: "ജോൺ ഡാൾട്ടൻ", o: ["അവോഗാഡ്രോ", "ജോൺ ഡാൾട്ടൻ", "റോബർട്ട് ബോയിൽ", "ജോസഫ് ലൂസാക്"] },
+        { id: 16, q: "പരമശൂന്യ താപനില (Absolute Zero Temperature) കെൽവിൻ സ്കെയിലിൽ എത്രയാണ്?", a: "0 K", o: ["0 K", "273 K", "-273 K", "100 K"] },
+        { id: 17, q: "ഒരു സൈക്കിൾ ട്യൂബ് വെയിലത്ത് കിടക്കുമ്പോൾ പൊട്ടിത്തെറിക്കുന്നത് ഏത് നിയമത്തിന് ഉദാഹരണമാണ്?", a: "ചാൾസ് നിയമം", o: ["ബോയിൽ നിയമം", "ചാൾസ് നിയമം", "അവോഗാഡ്രോ നിയമം", "ഗ്രഹാം നിയമം"] },
+        { id: 18, q: "പ്രഷർ കുക്കറിനുള്ളിൽ താപനില കൂടുമ്പോൾ മർദ്ദം കൂടുന്നതിന് അടിസ്ഥാനമായ നിയമം?", a: "ഗേ ലൂസാക് നിയമം", o: ["ബോയിൽ നിയമം", "ചാൾസ് നിയമം", "ഗേ ലൂസാക് നിയമം", "അവോഗാഡ്രോ നിയമം"] },
+        { id: 19, q: "ബോയിൽ നിയമം ആവിഷ്കരിച്ച റോബർട്ട് ബോയിൽ ഏത് രാജ്യക്കാരനാണ്?", a: "അയർലണ്ട്", o: ["ഇംഗ്ലണ്ട്", "ഫ്രാൻസ്", "അയർലണ്ട്", "ജർമ്മനി"] },
+        { id: 20, q: "താഴെ പറയുന്നവയിൽ മർദ്ദവും കെൽവിൻ താപനിലയും നേർ അനുപാതത്തിലായിരിക്കും എന്ന് പ്രസ്താവിക്കുന്ന സമവാക്യം ഏത്?", a: "P1/T1 = P2/T2", o: ["P1V1 = P2V2", "V1/T1 = V2/T2", "P1/T1 = P2/T2", "PV = nRT"] },
+        { id: 21, q: "വാതക തന്മാത്രകളുടെ ചലനാത്മക സിദ്ധാന്തം (Kinetic Theory of Gases) വികസിപ്പിച്ച പ്രധാന ശാസ്ത്രജ്ഞൻ ആര്?", a: "മാക്സ്‌വെൽ & ബോൾട്സ്മാൻ", o: ["റോബർട്ട് ബോയിൽ", "മാക്സ്‌വെൽ & ബോൾട്സ്മാൻ", "ഡാൾട്ടൻ", "അവോഗാഡ്രോ"] },
+        { id: 22, q: "ആദർശ വാതക സമവാക്യത്തിലെ 'R' എന്ന അക്ഷരം എന്തിനെ സൂചിപ്പിക്കുന്നു?", a: "യൂണിവേഴ്സൽ ഗ്യാസ് കോൺസ്റ്റന്റ്", o: ["റേഡിയസ് ഓഫ് ഗ്യാസ്", "യൂണിവേഴ്സൽ ഗ്യാസ് കോൺസ്റ്റന്റ്", "റെസിസ്റ്റൻസ്", "റേഷ്യോ"] },
+        { id: 23, q: "STP എന്നാൽ എന്താണ് അർത്ഥമാക്കുന്നത്?", a: "Standard Temperature and Pressure", o: ["Standard Temperature and Pressure", "State Temperature and Pressure", "Specific Thermal Pressure", "Static Total Pressure"] },
+        { id: 24, q: "ഒരു സിറിഞ്ചിന്റെ പിസ്റ്റൺ ഉള്ളിലേക്ക് തള്ളുമ്പോൾ വായുവിന്റെ വ്യാപ്തം കുറയുകയും മർദ്ദം കൂടുകയും ചെയ്യുന്നത് ഏത് നിയമപ്രകാരമാണ്?", a: "ബോയിൽ നിയമം", o: ["ചാൾസ് നിയമം", "ബോയിൽ നിയമം", "അവോഗാഡ്രോ നിയമം", "ഗേ ലൂസാക് നിയമം"] },
+        { id: 25, q: "STP-യിൽ നിശ്ചിത താപനിലയായി കണക്കാക്കുന്നത് എത്ര ഡിഗ്രി സെൽഷ്യസ് ആണ്?", a: "0°C", o: ["0°C", "25°C", "100°C", "273°C"] },
+        { id: 26, q: "ഒരു മുറിയുടെ ഒരു കോണിൽ തുറന്നു വെച്ച പെർഫ്യൂമിന്റെ മണം മുറിയിലാകെ പടരുന്നതിന് കാരണമായ പ്രതിഭാസം ഏത്?", a: "വിസരണം (Diffusion)", o: ["വിസരണം (Diffusion)", "അഭ്രംശം", "ബാഷ്പീകരണം", "ഘനീഭവിക്കൽ"] },
+        { id: 27, q: "വാതകങ്ങൾ കൂടുതൽ മർദ്ദമുള്ള സ്ഥലത്തു നിന്നും കുറഞ്ഞ മർദ്ദമുള്ള സ്ഥലത്തേക്ക് ഒരു ചെറിയ സുഷിരത്തിലൂടെ പുറത്തുപോകുന്ന പ്രതിഭാസം?", a: "എഫ്യൂഷൻ (Effusion)", o: ["ഡിഫ്യൂഷൻ", "എഫ്യൂഷൻ (Effusion)", "കണ്ടൻസേഷൻ", "ഇവാപ്പറേഷൻ"] },
+        { id: 28, q: "ഹീലിയം, ഹൈഡ്രജൻ എന്നീ വാതകങ്ങളിൽ ഏതാണ് കൂടുതൽ വേഗത്തിൽ വിസരണം (Diffuse) ചെയ്യുന്നത്?", a: "ഹൈഡ്രജൻ", o: ["ഹീലിയം", "ഹൈഡ്രജൻ", "രണ്ടും ഒരേ വേഗതയിൽ", "സാന്ദ്രത കൂടിയത്"] },
+        { id: 29, q: "ചാൾസ് നിയമം പ്രസ്താവിച്ച ഫ്രഞ്ച് ശാസ്ത്രജ്ഞൻ ജാക്വസ് ചാൾസ് ഈ നിയമം കണ്ടെത്തിയത് ഏതുമായി ബന്ധപ്പെട്ട പരീക്ഷണങ്ങളിലൂടെയാണ്?", a: "ഹോട്ട് എയർ ബലൂൺ", o: ["പ്രഷർ കുക്കർ", "ഹോട്ട് എയർ ബലൂൺ", "സിറിഞ്ചുകൾ", "അക്വേറിയം കുമിളകൾ"] },
+        { id: 30, q: "താപനില കൂടുമ്പോൾ വാതക തന്മാത്രകളുടെ ചലനവേഗതയ്ക്ക് (Kinetic Energy) എന്ത് വ്യത്യാസം വരുന്നു?", a: "കൂടുന്നു", o: ["കുറയുന്നു", "വ്യത്യാസമില്ല", "ആദ്യം കുറയുന്നു പിന്നെ കൂടുന്നു"] }
+    ];
+
+    // Game state tracking variables
+    let currentPool = [...allQuestions]; 
+    let currentIdx = 0; 
+
+    // Cumulative stats
+    let globalCorrectCount = 0;
+    let roundCorrect = 0;
+    let roundWrong = 0;
+    let roundSkipped = 0;
+
+    let nextPool = [];
+
+    // Helper to shuffle array (Fisher-Yates)
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // Initialize/Start a fresh round of the game
+    function initGame(questionPool) {
+        currentPool = [...questionPool];
+        currentIdx = 0;
+        roundCorrect = 0;
+        roundWrong = 0;
+        roundSkipped = 0;
+        nextPool = [];
+
+        document.getElementById('total-pool-num').innerText = currentPool.length;
+        
+        showScreen('game-screen');
+        loadQuestion();
+    }
+
+    // Load the question onto the UI
+    function loadQuestion() {
+        if (currentIdx >= currentPool.length) {
+            showScreen('submit-screen');
+            return;
+        }
+
+        const qData = currentPool[currentIdx];
+        
+        document.getElementById('current-question-num').innerText = currentIdx + 1;
+        const progressPercent = (currentIdx / currentPool.length) * 100;
+        document.getElementById('progress-fill').style.width = progressPercent + '%';
+
+        document.getElementById('question-text').innerText = qData.q;
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        let optionsCopy = [...qData.o];
+        shuffleArray(optionsCopy);
+
+        optionsCopy.forEach(optText => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-option';
+            btn.innerText = optText;
+            btn.onclick = function() { handleAnswer(optText); };
+            container.appendChild(btn);
+        });
+    }
+
+    // Process user's selected choice
+    function handleAnswer(selectedText) {
+        const qData = currentPool[currentIdx];
+        if (selectedText === qData.a) {
+            roundCorrect++;
+            globalCorrectCount++; 
+        } else {
+            roundWrong++;
+            nextPool.push(qData); 
+        }
+        currentIdx++;
+        loadQuestion();
+    }
+
+    // Process user skipping the question
+    function skipQuestion() {
+        const qData = currentPool[currentIdx];
+        roundSkipped++;
+        nextPool.push(qData); 
+        currentIdx++;
+        loadQuestion();
+    }
+
+    // View final tabulations on submit click
+    function showScoreboard() {
+        document.getElementById('progress-fill').style.width = '100%';
+        
+        document.getElementById('res-correct').innerText = roundCorrect;
+        document.getElementById('res-wrong').innerText = roundWrong;
+        document.getElementById('res-skipped').innerText = roundSkipped;
+
+        let score = (roundCorrect * 1) + (roundWrong * -0.33);
+        document.getElementById('res-score').innerText = score.toFixed(2);
+
+        showScreen('score-screen');
+    }
+
+    // Navigate out of scoreboard
+    function goToNextPhasePrompt() {
+        if (nextPool.length === 0) {
+            showScreen('victory-screen');
+        } else {
+            showScreen('retry-prompt-screen');
+        }
+    }
+
+    // Triggers the next recursive iteration with filtered pool
+    function startNextGameRound() {
+        initGame(nextPool);
+    }
+
+    // Utility screen toggler
+    function showScreen(screenId) {
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('submit-screen').classList.add('hidden');
+        document.getElementById('score-screen').classList.add('hidden');
+        document.getElementById('retry-prompt-screen').classList.add('hidden');
+        document.getElementById('victory-screen').classList.add('hidden');
+
+        document.getElementById(screenId).classList.remove('hidden');
+    }
+
+    window.onload = function() {
+        initGame(allQuestions);
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSC Periodic Table Quiz Game</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --primary-color: #1a73e8;
+            --primary-hover: #1557b0;
+            --text-color: #202124;
+            --skip-color: #5f6368;
+            --skip-hover: #3c4043;
+            --success-color: #137333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* കാഴ്ച പരിമിതർക്കായി വലിയ അക്ഷരങ്ങൾ */
+        h1 {
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: bold;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 18px 25px;
+            border: 3px solid var(--primary-color);
+            border-radius: 10px;
+            background-color: transparent;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            width: 100%;
+        }
+
+        .btn:hover, .btn:focus {
+            background-color: var(--primary-color);
+            color: white;
+            outline: none;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+
+        .btn-skip {
+            font-size: 1.4rem;
+            padding: 15px 30px;
+            border: 3px solid var(--skip-color);
+            color: var(--skip-color);
+            background-color: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-skip:hover {
+            background-color: var(--skip-color);
+            color: white;
+        }
+
+        .btn-action {
+            font-size: 1.6rem;
+            padding: 15px 40px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-action:hover {
+            background-color: #0b5123;
+        }
+
+        .status-text {
+            font-size: 1.3rem;
+            color: #555;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .result-box {
+            font-size: 1.6rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 8px solid var(--primary-color);
+        }
+
+        .score-total {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #d93025;
+            margin-top: 15px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="quiz-screen">
+        <div class="status-text" id="progress-text">ചോദ്യം: 1 / 20</div>
+        <div class="question-text" id="question-field">ചോദ്യം ഇവിടെ വരും...</div>
+        <div class="options-container" id="options-field">
+            </div>
+        <button class="btn-skip" id="skip-btn" onclick="skipQuestion()">ഈ ചോദ്യം സ്കിപ്പ് ചെയ്യുക</button>
+    </div>
+
+    <div id="submit-screen" class="hidden">
+        <h1>ക്വിസ് പൂർത്തിയായി!</h1>
+        <p class="question-text" style="text-align:center;">നിങ്ങൾ മുഴുവൻ ചോദ്യങ്ങളും പൂർത്തിയാക്കിയിരിക്കുന്നു. നിങ്ങളുടെ സ്കോർ കാണാൻ താഴെ നൽകിയിരിക്കുന്ന സബ്മിറ്റ് ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.</p>
+        <button class="btn-action" onclick="showResults()">സബ്മിറ്റ് (Submit)</button>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h1>ഫലം (Results)</h1>
+        <div class="result-box">
+            <div>ആകെ ശരിയുത്തരം: <span id="res-correct" style="color:green; font-weight:bold;">0</span></div>
+            <div>ആകെ തെറ്റുത്തരം: <span id="res-wrong" style="color:red; font-weight:bold;">0</span></div>
+            <div>സ്കിപ്പ് ചെയ്തത്: <span id="res-skipped" style="color:orange; font-weight:bold;">0</span></div>
+            <div class="score-total">ആകെ ലഭിച്ച സ്കോർ: <span id="res-score">0</span></div>
+        </div>
+        <button class="btn-action" onclick="goToNextPhasePrompt()">ഓക്കെ (OK)</button>
+    </div>
+
+    <div id="retry-screen" class="hidden">
+        <h1>അടുത്ത ഘട്ടം</h1>
+        <p class="question-text" style="text-align:center;">തെറ്റുത്തരങ്ങൾ ശരിയാക്കുന്നതിന് ഒരവസരം കൂടെ വേണമെങ്കിൽ താഴെയുള്ള 'ലെറ്റ്സ് ഗോ' ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.</p>
+        <button class="btn-action" style="background-color: var(--primary-color);" onclick="startNextRound()">ലെറ്റ്സ് ഗോ (Let's Go)</button>
+    </div>
+
+    <div id="success-screen" class="hidden">
+        <h1 style="color: var(--success-color); font-size: 3rem;">അഭിനന്ദനങ്ങൾ! 🎉</h1>
+        <p class="question-text" style="text-align:center; font-size: 2rem;">നിങ്ങൾ എല്ലാ ചോദ്യങ്ങൾക്കും ശരിയുത്തരം കണ്ടെത്തിയിരിക്കുന്നു!</p>
+    </div>
+</div>
+
+<script>
+    // 20 പ്രധാന പി.എസ്.സി ചോദ്യങ്ങൾ
+    const allQuestions = [
+        { id: 1, q: "ആധുനിക പിരിയോഡിക് ടേബിളിന്റെ പിതാവ് ആര്?", a: "ഹെൻറി മോസ്ലി", o: ["മെൻഡലീഫ്", "ഹെൻറി മോസ്ലി", "ന്യൂലാൻഡ്സ്", "ഡോബറൈനർ"] },
+        { id: 2, q: "പിരിയോഡിക് ടേബിളിലെ ആകെ ഗ്രൂപ്പുകളുടെ എണ്ണം എത്ര?", a: "18", o: ["7", "18", "8", "9"] },
+        { id: 3, q: "പിരിയോഡിക് ടേബിളിലെ ആകെ പിരിയഡുകളുടെ എണ്ണം എത്ര?", a: "7", o: ["7", "18", "10", "12"] },
+        { id: 4, q: "ഏറ്റവും हलക്കമേറിയ മൂലകം ഏതാണ്?", a: "ഹൈഡ്രജൻ", o: ["ഹീലിയം", "ഹൈഡ്രജൻ", "ലിഥിയം", "ഓക്സിജൻ"] },
+        { id: 5, q: "പ്രകൃതിയിൽ ഏറ്റവും കൂടുതൽ കാണപ്പെടുന്ന മൂലകം ഏത്?", a: "ഹൈഡ്രജൻ", o: ["നൈട്രജൻ", "ഓക്സിജൻ", "ഹൈഡ്രജൻ", "കാർബൺ"] },
+        { id: 6, q: "ഭൂവൽക്കത്തിൽ ഏറ്റവും കൂടുതൽ കാണപ്പെടുന്ന ലോഹം ഏത്?", a: "അലുമിനിയം", o: ["ഇരുമ്പ്", "അലുമിനിയം", "കാൽസ്യം", "സോഡിയം"] },
+        { id: 7, q: "അന്തരീക്ഷത്തിൽ ഏറ്റവും കൂടുതലുള്ള വാതകം ഏത്?", a: "നൈട്രജൻ", o: ["ഓക്സിജൻ", "നൈട്രജൻ", "ഹൈഡ്രജൻ", "ആർഗൺ"] },
+        { id: 8, q: "ഏറ്റവും കടുപ്പമേറിയ അലോഹം ഏതാണ്?", a: "വജ്രം", o: ["ഗ്രാഫൈറ്റ്", "വജ്രം", "അയോഡിൻ", "സൾഫർ"] },
+        { id: 9, q: "ദ്രാവകാവസ്ഥയിലുള്ള ഒരേയൊരു ലോഹം ഏത്?", a: "മെർക്കുറി", o: ["ബ്രോമിൻ", "മെർക്കുറി", "ഗാലിയം", "സീസിയം"] },
+        { id: 10, q: "ദ്രാവകാവസ്ഥയിലുള്ള ഒരേയൊരു അലോഹം ഏത്?", a: "ബ്രോമിൻ", o: ["ബ്രോമിൻ", "ഫ്ലൂറിൻ", "ക്ലോറിൻ", "അയോഡിൻ"] },
+        { id: 11, q: "മണ്ണെണ്ണയിൽ സൂക്ഷിക്കുന്ന ലോഹം ഏതാണ്?", a: "സോഡിയം", o: ["മഗ്നീഷ്യം", "സോഡിയം", "കാൽസ്യം", "ലിഥിയം"] },
+        { id: 12, q: "ഏറ്റവും ഉയർന്ന ഇലക്ട്രോ നെഗറ്റിവിറ്റിയുള്ള മൂലകം ഏത്?", a: "ഫ്ലൂറിൻ", o: ["ക്ലോറിൻ", "ഫ്ലൂറിൻ", "ഓക്സിജൻ", "നൈട്രജൻ"] },
+        { id: 13, q: "ഉൽകൃഷ്ട വാതകങ്ങൾ പിരിയോഡിക് ടേബിളിലെ എത്രാമത്തെ ഗ്രൂപ്പിലാണ്?", a: "18", o: ["1", "17", "18", "2"] },
+        { id: 14, q: "ആദ്യമായി നിർമ്മിതമായി ഉണ്ടായ കൃത്രിമ മൂലകം ഏതാണ്?", a: "ടെക്നീഷ്യം", o: ["പ്ലൂട്ടോണിയം", "യൂറേനിയം", "ടെക്നീഷ്യം", "ഫ്രാൻസിയം"] },
+        { id: 15, q: "റേഡിയോ ആക്ടിവിറ്റിയുള്ള ഒരു ഉൽകൃഷ്ട വാതകം ഏത്?", a: "റേഡൺ", o: ["ഹീലിയം", "നിയോൺ", "ആർഗൺ", "റേഡൺ"] },
+        { id: 16, q: "ഹാlogൻ കുടുംബം എത്രാമത്തെ ഗ്രൂപ്പിലാണ് ഉൾപ്പെടുന്നത്?", a: "17", o: ["16", "17", "15", "18"] },
+        { id: 17, q: "ഏറ്റവും കുറഞ്ഞ അറ്റോമിക നമ്പറുള്ള ഉൽകൃഷ്ട വാതകം ഏത്?", a: "ഹീലിയം", o: ["ഹൈഡ്രജൻ", "ഹീലിയം", "നിയോൺ", "ആർഗൺ"] },
+        { id: 18, q: "ചാലകത ഏറ്റവും കൂടുതലുള്ള ലോഹം ഏതാണ്?", a: "വെള്ളി", o: ["ചെമ്പ്", "സ്വർണ്ണം", "അലുമിനിയം", "വെള്ളി"] },
+        { id: 19, q: "സൂര്യനിൽ ഏറ്റവും കൂടുതലുള്ള വാതകം ഏത്?", a: "ഹൈഡ്രജൻ", o: ["ഹീലിയം", "ഹൈഡ്രജൻ", "ഓക്സിജൻ", "നൈട്രജൻ"] },
+        { id: 20, q: "വൈദ്യുതി കടത്തിവിടുന്ന ഒരേയൊരു അലോഹം ഏത്?", a: "ഗ്രാഫൈറ്റ്", o: ["വജ്രം", "ഗ്രാഫൈറ്റ്", "സൾഫർ", "ഫോസ്ഫറസ്"] }
+    ];
+
+    // ഗെയിം വേരിയബിളുകൾ
+    let currentPool = [...allQuestions]; 
+    let currentQuestionIndex = 0;
+
+    // സ്കോർ കണക്കാക്കാനുള്ള ഗ്ലോബൽ കൗണ്ടറുകൾ
+    let globalCorrectCount = 0;
+    let roundCorrect = 0;
+    let roundWrong = 0;
+    let roundSkipped = 0;
+
+    // പേജ് ലോഡ് ചെയ്യുമ്പോൾ ആദ്യ ചോദ്യം കാണിക്കുക
+    window.onload = function() {
+        loadQuestion();
+    };
+
+    // ചോദ്യങ്ങൾ ഷഫിൾ ചെയ്യാനുള്ള ഫങ്ക്ഷൻ (ഓപ്ഷനുകൾ ഒരേ സ്ഥാനത്ത് വരാതിരിക്കാൻ)
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // ചോദ്യം സ്ക്രീനിൽ കാണിക്കുന്ന ഫങ്ക്ഷൻ
+    function loadQuestion() {
+        if (currentQuestionIndex < currentPool.length) {
+            const currentQuestion = currentPool[currentQuestionIndex];
+            
+            // പ്രോഗ്രസ് ബാർ അപ്ഡേറ്റ്
+            document.getElementById("progress-text").innerText = `ചോദ്യം: ${currentQuestionIndex + 1} / ${currentPool.length}`;
+            
+            // ചോദ്യം നൽകുന്നു
+            document.getElementById("question-field").innerText = currentQuestion.q;
+            
+            // ഓപ്ഷനുകൾ ഷഫിൾ ചെയ്ത് ബട്ടണുകളാക്കുന്നു
+            let options = [...currentQuestion.o];
+            shuffleArray(options);
+            
+            const optionsContainer = document.getElementById("options-field");
+            optionsContainer.innerHTML = ""; // പഴയ ഓപ്ഷനുകൾ ഒഴിവാക്കുന്നു
+            
+            options.forEach(opt => {
+                const button = document.createElement("button");
+                button.className = "btn";
+                button.innerText = opt;
+                button.onclick = function() { checkAnswer(opt); };
+                optionsContainer.appendChild(button);
+            });
+        } else {
+            // ഈ റൗണ്ടിലെ ചോദ്യങ്ങൾ കഴിഞ്ഞാൽ സബ്മിറ്റ് സ്ക്രീനിലേക്ക്
+            document.getElementById("quiz-screen").classList.add("hidden");
+            document.getElementById("submit-screen").classList.remove("hidden");
+        }
+    }
+
+    // ഉത്തരം പരിശോധിക്കുന്ന ഫങ്ക്ഷൻ
+    function checkAnswer(selectedOption) {
+        const currentQuestion = currentPool[currentQuestionIndex];
+        if (selectedOption === currentQuestion.a) {
+            roundCorrect++;
+            globalCorrectCount++;
+            // അടുത്ത റൗണ്ടിലേക്ക് ഈ ചോദ്യം വരാതിരിക്കാൻ 'allQuestions' ൽ നിന്ന് മാറ്റാം
+            const idx = allQuestions.findIndex(q => q.id === currentQuestion.id);
+            if (idx > -1) allQuestions.splice(idx, 1);
+        } else {
+            roundWrong++;
+        }
+        nextQuestion();
+    }
+
+    // സ്കിപ്പ് ബട്ടൺ അമർത്തുമ്പോൾ
+    function skipQuestion() {
+        roundSkipped++;
+        nextQuestion();
+    }
+
+    // അടുത്ത ചോദ്യത്തിലേക്ക് പോകാൻ
+    function nextQuestion() {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+
+    // റിസൾട്ട് കാണിക്കുന്ന ഫങ്ക്ഷൻ (സബ്മിറ്റ് ക്ലിക്ക് ചെയ്യുമ്പോൾ)
+    function showResults() {
+        document.getElementById("submit-screen").classList.add("hidden");
+        document.getElementById("result-screen").classList.remove("hidden");
+
+        // സ്കോർ കണക്കുകൂട്ടൽ: ശരിക്ക് 1, തെറ്റിന് -0.33, സ്കിപ്പിന് 0
+        let totalScore = (roundCorrect * 1) + (roundWrong * -0.33);
+        // ദശാംശം ക്രമീകരിക്കാൻ (2 ഡിജിറ്റ്)
+        totalScore = Math.round(totalScore * 100) / 100;
+
+        document.getElementById("res-correct").innerText = roundCorrect;
+        document.getElementById("res-wrong").innerText = roundWrong;
+        document.getElementById("res-skipped").innerText = roundSkipped;
+        document.getElementById("res-score").innerText = totalScore;
+    }
+
+    // ഒക്കെ ബട്ടൺ അമർത്തുമ്പോൾ അടുത്ത ഘട്ടത്തിലേക്ക്
+    function goToNextPhasePrompt() {
+        document.getElementById("result-screen").classList.add("hidden");
+        
+        // എല്ലാ ചോദ്യങ്ങളും ശരിയായോ എന്ന് പരിശോധിക്കുന്നു
+        if (allQuestions.length === 0) {
+            document.getElementById("success-screen").classList.remove("hidden");
+        } else {
+            document.getElementById("retry-screen").classList.remove("hidden");
+        }
+    }
+
+    // തെറ്റിയതും സ്കിപ്പ് ചെയ്തതുമായ ചോദ്യങ്ങളുമായി അടുത്ത ഗെയിം തുടങ്ങുന്നു
+    function startNextRound() {
+        document.getElementById("retry-screen").classList.add("hidden");
+        document.getElementById("quiz-screen").classList.remove("hidden");
+
+        // ബാക്കിയുള്ള (തെറ്റിയതും സ്കിപ്പ് ചെയ്തതുമായ) ചോദ്യങ്ങൾ പുതിയ പൂൾ ആക്കുന്നു
+        currentPool = [...allQuestions];
+        currentQuestionIndex = 0;
+        
+        // പുതിയ റൗണ്ടിനായി കൗണ്ടറുകൾ റീസെറ്റ് ചെയ്യുന്നു (പഴയ ശരിയുത്തരങ്ങൾ സുരക്ഷിതമാണ്)
+        roundCorrect = 0;
+        roundWrong = 0;
+        roundSkipped = 0;
+
+        loadQuestion();
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSC Biology Quiz: രക്തചംക്രമണം</title>
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --skip-color: #6b7280;
+            --bg-color: #f0fdf4;
+            --text-color: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+            border-top: 8px solid var(--primary-color);
+        }
+
+        .header-title {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 15px;
+        }
+
+        .progress-bar {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.5;
+            margin-bottom: 30px;
+            color: #000000;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* കാഴ്ച പരിമിതർക്കായി വലിയ ബട്ടണുകളും അക്ഷരങ്ങളും */
+        .btn {
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 18px 25px;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            background-color: #f9fafb;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: #e0f2fe;
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .action-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-skip {
+            background-color: var(--skip-color);
+            color: white;
+            border: none;
+            text-align: center;
+            width: auto;
+            min-width: 150px;
+        }
+
+        .btn-skip:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-center {
+            display: block;
+            margin: 30px auto 0 auto;
+            text-align: center;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            width: auto;
+            min-width: 200px;
+            font-size: 1.6rem;
+        }
+
+        .btn-center:hover {
+            background-color: #059669;
+        }
+
+        .result-card {
+            text-align: center;
+            font-size: 1.5rem;
+            line-height: 2;
+        }
+
+        .result-stats {
+            background-color: #f3f4f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+            display: inline-block;
+            min-width: 300px;
+        }
+
+        .score-highlight {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: 15px;
+        }
+
+        .congrats-msg {
+            color: var(--success-color);
+            font-size: 2.2rem;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .active-page {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="header-title">PSC ക്വിസ്: രക്തചംക്രമണ വ്യവസ്ഥ</div>
+
+    <div id="quiz-page" class="page active-page">
+        <div class="progress-bar" id="progress-text">ചോദ്യം: 1/30</div>
+        <div class="question-text" id="question-box">ചോദ്യം ഇവിടെ വരും...</div>
+        <div class="options-grid" id="options-box">
+            </div>
+        <div class="action-container">
+            <button class="btn btn-skip" onclick="skipQuestion()">Skip</button>
+        </div>
+    </div>
+
+    <div id="submit-page" class="page">
+        <div class="result-card">
+            <p>നിങ്ങൾ മുഴുവൻ ചോദ്യങ്ങളും പൂർത്തിയാക്കിയിരിക്കുന്നു.</p>
+            <p>നിങ്ങളുടെ സ്കോർ കാണാൻ താഴെ നൽകിയിരിക്കുന്ന സബ്മിറ്റ് ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.</p>
+            <button class="btn btn-center" onclick="showResults()">Submit</button>
+        </div>
+    </div>
+
+    <div id="score-page" class="page">
+        <div class="result-card">
+            <h2>ഫലം (Quiz Result)</h2>
+            <div class="result-stats">
+                <div>✅ ആകെ ശരിയുത്തരം: <strong id="res-correct" style="color:var(--success-color)">0</strong></div>
+                <div>❌ ആകെ തെറ്റുത്തരം: <strong id="res-wrong" style="color:var(--danger-color)">0</strong></div>
+                <div>⏭️ സ്കിപ്പ് ചെയ്തത്: <strong id="res-skipped" style="color:var(--skip-color)">0</strong></div>
+            </div>
+            <div class="score-highlight">ആകെ സ്കോർ: <span id="res-score">0</span></div>
+            <button class="btn btn-center" style="background-color: var(--secondary-color);" onclick="goToNextChancePage()">ഓക്കെ</button>
+        </div>
+    </div>
+
+    <div id="next-chance-page" class="page">
+        <div class="result-card">
+            <p>തെറ്റുത്തരങ്ങൾ ശരിയാക്കുന്നതിനും സ്കിപ്പ് ചെയ്തവ വീണ്ടും ശ്രമിക്കുന്നതിനും ഒരവസരം കൂടി വേണമെങ്കിൽ താഴെയുള്ള ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.</p>
+            <button class="btn btn-center" style="background-color: #8b5cf6;" onclick="startNextRound()">Let's Go</button>
+        </div>
+    </div>
+
+    <div id="final-page" class="page">
+        <div class="congrats-msg">
+            🎉 അഭിനന്ദനങ്ങൾ! 🎉<br>
+            നിങ്ങൾ എല്ലാ ചോദ്യങ്ങൾക്കും ശരിയുത്തരം കണ്ടെത്തിയിരിക്കുന്നു!
+        </div>
+    </div>
+</div>
+
+<script>
+    // 30 പ്രധാന PSC ചോദ്യങ്ങൾ
+    const masterQuestions = [
+        { q: "മനുഷ്യ ശരീരത്തിലെ ഏറ്റവും വലിയ രക്തക്കുഴൽ ഏതാണ്?", a: "മഹാധമനി (Aorta)", o: ["ശിരസ്സ് സിര", "പൾമണറി ധമനി", "മഹാസിര (Vena Cava)"] },
+        { q: "രക്തം കട്ടപിടിക്കാൻ സഹായിക്കുന്ന രക്തകോശങ്ങൾ ഏവ?", a: "പ്ലേറ്റ്‍ലെറ്റുകൾ", o: ["ചുവന്ന രക്തകോശങ്ങൾ", "ശ്വേത രക്തകോശങ്ങൾ", "ലൂക്കോസൈറ്റുകൾ"] },
+        { q: "രക്തത്തിന് ചുവപ്പ് നിറം നൽകുന്ന പിഗ്മെന്റ് ഏതാണ്?", a: "ഹീമോഗ്ലോബിൻ", o: ["ഹീമോസയാനിൻ", "മെലാനിൻ", "ക്ലോറോഫിൽ"] },
+        { q: "ആരോഗ്യമുള്ള ഒരു മനുഷ്യന്റെ സാധാരണ രക്തസമ്മർദ്ദം എത്രയാണ്?", a: "120/80 mm Hg", o: ["80/120 mm Hg", "140/90 mm Hg", "100/60 mm Hg"] },
+        { q: "രക്തഗ്രൂപ്പുകൾ കണ്ടെത്തിയത് ആരാണ്?", a: "കാൾ ലാൻഡ്സ്റ്റൈനർ", o: ["വില്യം ഹാർവി", "ലൂയി പാസ്ചർ", "റോബർട്ട് കോഖ്"] },
+        { q: "യൂണിവേഴ്സൽ ഡോണർ (എല്ലാവർക്കും രക്തം നൽകാൻ കഴിയുന്നവർ) എന്നറിയപ്പെടുന്ന രക്തഗ്രൂപ്പ് ഏത്?", a: "O ഗ്രൂപ്പ്", o: ["AB ഗ്രൂപ്പ്", "A ഗ്രൂപ്പ്", "B ഗ്രൂപ്പ്"] },
+        { q: "യൂണിവേഴ്സൽ റെസിപ്പിയന്റ് (എല്ലാവരിൽ നിന്നും രക്തം സ്വീകരിക്കുന്നവർ) എന്നറിയപ്പെടുന്ന രക്തഗ്രൂപ്പ്?", a: "AB ഗ്രൂപ്പ്", o: ["O ഗ്രൂപ്പ്", "A ഗ്രൂപ്പ്", "B ഗ്രൂപ്പ്"] },
+        { q: "മനുഷ്യശരീരത്തിൽ രക്തചംക്രമണം കണ്ടെത്തിയത് ആരാണ്?", a: "വില്യം ഹാർവി", o: ["എഡ്വേർഡ് ജെന്നർ", "കാൾ ലാൻഡ്സ്റ്റൈനർ", "ഗ്രിഗർ മെൻഡൽ"] },
+        { q: "ശുദ്ധരക്തം വഹിക്കുന്ന സിര ഏതാണ്?", a: "പൾമണറി സിര (ശ്വാസകോശ സിര)", o: ["മഹാസിര", "പൾമണറി ധമനി", "പോർട്ടൽ സിര"] },
+        { q: "അശുദ്ധരക്തം വഹിക്കുന്ന ധമനി ഏതാണ്?", a: "പൾമണറി ധമനി (ശ്വാസകോശ ധമനി)", o: ["മഹാധമനി", "പൾമണറി സിര", "കരോട്ടിഡ് ധമനി"] },
+        { q: "രക്തം കട്ടപിടിക്കാൻ സഹായിക്കുന്ന വിറ്റാമിൻ ഏതാണ്?", a: "വിറ്റാമിൻ K", o: ["വിറ്റാമിൻ A", "വിറ്റാമിൻ C", "വിറ്റാമിൻ D"] },
+        { q: "ചുവന്ന രക്തകോശങ്ങളുടെ ആയുസ്സ് എത്ര ദിവസമാണ്?", a: "120 ദിവസം", o: ["10 ദിവസം", "60 ദിവസം", "200 ദിവസം"] },
+        { q: "ശരീരത്തിലെ പട്ടാളക്കാർ എന്നറിയപ്പെടുന്ന രക്തകോശങ്ങൾ ഏവ?", a: "ശ്വേത രക്തകോശങ്ങൾ (WBC)", o: ["ചുവന്ന രക്തകോശങ്ങൾ (RBC)", "പ്ലേറ്റ്‌ലെറ്റുകൾ", "പ്ലാസ്മ"] },
+        { q: "ചുവന്ന രക്തകോശങ്ങൾ നിർമ്മിക്കപ്പെടുന്നത് എവിടെയാണ്?", a: "അസ്ഥിമജ്ജ (Bone marrow)", o: ["പ്ലീഹ (Spleen)", "കരൾ", "ഹൃദയം"] },
+        { q: "ചുവന്ന രക്തകോശങ്ങളുടെ ശ്മശാനം എന്നറിയപ്പെടുന്ന അവയവം ഏതാണ്?", a: "പ്ലീഹ (Spleen)", o: ["വൃക്ക", "കരൾ", "ഹൃദയം"] },
+        { q: "രക്തത്തിലെ ദ്രാവക ഭാഗം എന്നറിയപ്പെടുന്നത് എന്താണ്?", a: "പ്ലാസ്മ", o: ["ഹീമോഗ്ലോബിൻ", "ലാലീരസം", "സീറം"] },
+        { q: "രക്തത്തിൽ അടങ്ങിയിരിക്കുന്ന പ്രധാന ലോഹം ഏതാണ്?", a: "ഇരുമ്പ് (Iron)", o: ["കാൽസ്യം", "മഗ്നീഷ്യം", "ചെമ്പ്"] },
+        { q: "രക്തം കട്ടപിടിക്കാത്ത അവസ്ഥ ഉണ്ടാകുന്ന ജനിതക രോഗം ഏത്?", a: "ഹീമോഫീലിയ", o: ["അനീമിയ", "ലൂക്കീമിയ", "തലസീമിയ"] },
+        { q: "രക്തത്തിലെ ചുവന്ന രക്തകോശങ്ങളുടെ കുറവ് മൂലം ഉണ്ടാകുന്ന രോഗം?", a: "അനീമിയ (വിളർച്ച)", o: ["ലൂക്കീമിയ", "പോളീസൈതീമിയ", "ഡെങ്കിപ്പനി"] },
+        { q: "രക്ത കാൻസർ എന്നറിയപ്പെടുന്ന രോഗം ഏതാണ്?", a: "ലൂക്കീമിയ", o: ["അനീമിയ", "ഹീമോഫീലിയ", "മലേറിയ"] },
+        { q: "ശരീരത്തിനകത്ത് രക്തം കട്ടപിടിക്കുന്നത് തടയുന്ന പദാർത്ഥം ഏതാണ്?", a: "ഹെപ്പാരിൻ", o: ["ഹിസ്റ്റമിൻ", "ഫാക്റ്റർ VIII", "ത്രോംബിൻ"] },
+        { q: "ഒരു സാധാരണ മനുഷ്യന്റെ ശരീരത്തിൽ ഏകദേശം എത്ര ലിറ്റർ രക്തം ഉണ്ടായിരിക്കും?", a: "5 - 6 ലിറ്റർ", o: ["2 - 3 ലിറ്റർ", "8 - 10 ലിറ്റർ", "1 ലിറ്റർ"] },
+        { q: "ഹൃദയത്തെ പൊതിഞ്ഞു സൂക്ഷിക്കുന്ന ഇരട്ട സ്തരം ഏതാണ്?", a: "പെരികാർഡിയം", o: ["പ്ലൂറ", "പെരിറ്റോണിയം", "മെനിഞ്ചസ്"] },
+        { q: "മനുഷ്യ ഹൃദയത്തിന് എത്ര അറകളാണുള്ളത്?", a: "4", o: ["2", "3", "5"] },
+        { q: "രക്തസമ്മർദ്ദം അളക്കാൻ ഉപയോഗിക്കുന്ന ഉപകരണം ഏതാണ്?", a: "സ്ഫിഗ്മോമാനോമീറ്റർ", o: ["സ്റ്റെതസ്കോപ്പ്", "ബാരോമീറ്റർ", "തെർമോമീറ്റർ"] },
+        { q: "Rh ഫാക്ടർ ആദ്യമായി കണ്ടെത്തിയത് ഏത് ജീവിയിലാണ്?", a: "ആർക്കക്കുരങ്ങ് (Rhesus Monkey)", o: ["ചിമ്പാൻസി", "പൂച്ച", "ഗിനിപ്പന്നി"] },
+        { q: "രക്തത്തെക്കുറിച്ചുള്ള പഠനം അറിയപ്പെടുന്നത് എങ്ങനെ?", a: "ഹീമറ്റോളജി", o: ["കാർഡിയോളജി", "ഓങ്കോളജി", "നെഫ്രോളജി"] },
+        { q: "ഹൃദയമിടിപ്പ് അളക്കാൻ ഉപയോഗിക്കുന്ന ഉപകരണം ഏതാണ്?", a: "സ്റ്റെതസ്കോപ്പ്", o: ["സ്ഫിഗ്മോമാനോമീറ്റർ", "ഇ.സി.ജി", "പേസ്മേക്കർ"] },
+        { q: "കൃത്രിമ ഹൃദയമിടിപ്പ് നിയന്ത്രിക്കുന്നതിനായി ശരീരത്തിൽ ഘടിപ്പിക്കുന്ന ഉപകരണം?", a: "പേസ്മേക്കർ", o: ["സ്റ്റെന്റ്", "ഇ.സി.ജി മെഷീൻ", "ഡയാലിസിസ് മെഷീൻ"] },
+        { q: "ഏറ്റവും വലിയ ശ്വേതരക്തകോശം ഏതാണ്?", a: "മോണോസൈറ്റ്", o: ["ലിംഫോസൈറ്റ്", "ന്യൂട്രോഫിൽ", "ബേസോഫിൽ"] }
+    ];
+
+    // ഗെയിം അവസ്ഥ സൂക്ഷിക്കാനുള്ള വേരിയബിളുകൾ
+    let currentPool = []; // നിലവിലെ റൗണ്ടിലെ ചോദ്യങ്ങൾ
+    let currentIdx = 0;   // നിലവിലെ ചോദ്യത്തിന്റെ ഇൻഡക്സ്
+
+    // സ്കോർ കണക്കാക്കൽ (ഗെയിം മുഴുവൻ നീണ്ടുനിൽക്കുന്നത്)
+    let totalCorrectCount = 0; 
+    let roundCorrect = 0;
+    let roundWrong = 0;
+    let roundSkipped = 0;
+
+    // അടുത്ത റൗണ്ടിലേക്ക് മാറ്റിവെക്കേണ്ട ചോദ്യങ്ങൾ (തെറ്റിയതും സ്കിപ്പ് ചെയ്തതും)
+    let nextRoundPool = [];
+
+    // ഗെയിം ആരംഭിക്കുന്നു
+    function initGame() {
+        // തുടക്കത്തിൽ 30 ചോദ്യങ്ങളും പൂളിലേക്ക് എടുക്കുന്നു
+        currentPool = masterQuestions.map((q, idx) => ({ ...q, originalIndex: idx }));
+        currentIdx = 0;
+        totalCorrectCount = 0;
+        startRound();
+    }
+
+    function startRound() {
+        roundCorrect = 0;
+        roundWrong = 0;
+        roundSkipped = 0;
+        nextRoundPool = [];
+        showPage("quiz-page");
+        loadQuestion();
+    }
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+        document.getElementById(pageId).classList.add('active-page');
+    }
+
+    function loadQuestion() {
+        if (currentIdx >= currentPool.length) {
+            // റൗണ്ട് കഴിഞ്ഞു, സബ്മിറ്റ് പേജിലേക്ക്
+            showPage("submit-page");
+            return;
+        }
+
+        const qData = currentPool[currentIdx];
+        document.getElementById("progress-text").innerText = `ചോദ്യം: ${currentIdx + 1} / ${currentPool.length}`;
+        document.getElementById("question-box").innerText = qData.q;
+
+        // ഓപ്ഷനുകൾ കൂട്ടിക്കലർത്തുന്നു (Shuffling options)
+        let options = [qData.a, ...qData.o];
+        options = shuffleArray(options);
+
+        const optionsBox = document.getElementById("options-box");
+        optionsBox.innerHTML = "";
+
+        options.forEach(opt => {
+            const button = document.createElement("button");
+            button.className = "btn";
+            button.innerText = opt;
+            button.onclick = () => handleAnswer(opt, qData.a);
+            optionsBox.appendChild(button);
+        });
+    }
+
+    function handleAnswer(selected, correct) {
+        const qData = currentPool[currentIdx];
+        if (selected === correct) {
+            roundCorrect++;
+            totalCorrectCount++;
+        } else {
+            roundWrong++;
+            // തെറ്റിയ ചോദ്യം അടുത്ത റൗണ്ടിലേക്ക് മാറ്റുന്നു
+            nextRoundPool.push(qData);
+        }
+        currentIdx++;
+        loadQuestion();
+    }
+
+    function skipQuestion() {
+        const qData = currentPool[currentIdx];
+        roundSkipped++;
+        // സ്കിപ്പ് ചെയ്ത ചോദ്യം അടുത്ത റൗണ്ടിലേക്ക് മാറ്റുന്നു
+        nextRoundPool.push(qData);
+        currentIdx++;
+        loadQuestion();
+    }
+
+    function showResults() {
+        document.getElementById("res-correct").innerText = roundCorrect;
+        document.getElementById("res-wrong").innerText = roundWrong;
+        document.getElementById("res-skipped").innerText = roundSkipped;
+
+        // സ്കോർ കണക്കാക്കൽ: ശരിക്ക് 1, തെറ്റിന് -0.33, സ്കിപ്പിന് 0
+        let score = (roundCorrect * 1) + (roundWrong * -0.33);
+        document.getElementById("res-score").innerText = score.toFixed(2);
+
+        showPage("score-page");
+    }
+
+    function goToNextChancePage() {
+        if (nextRoundPool.length === 0) {
+            // എല്ലാ ചോദ്യങ്ങളും ശരിയാക്കി കഴിഞ്ഞാൽ ഫൈനൽ പേജ്
+            showPage("final-page");
+        } else {
+            showPage("next-chance-page");
+        }
+    }
+
+    function startNextRound() {
+        // അവശേഷിക്കുന്ന ചോദ്യങ്ങൾ പുതിയ പൂൾ ആയി മാറുന്നു
+        currentPool = [...nextRoundPool];
+        currentIdx = 0;
+        startRound();
+    }
+
+    // അറേ കൂട്ടിക്കലർത്താനുള്ള ഫങ്ഷൻ
+    function shuffleArray(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // വെബ്പേജ് ലോഡ് ചെയ്യുമ്പോൾ കളി തുടങ്ങുന്നു
+    window.onload = initGame;
+</script>
+
+</body>
+</html>
