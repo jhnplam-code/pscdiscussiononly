@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSC Discussion Only</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #27ae60;
+            --danger-color: #c0392b;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex: 1;
+            width: 90%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 15px;
+            font-size: 2.2rem;
+            margin-top: 0;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 20px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn-green { background-color: var(--secondary-color); }
+        .btn-green:hover { background-color: #219653; }
+        
+        .btn-red { background-color: var(--danger-color); }
+        .btn-red:hover { background-color: #962d22; }
+
+        .center-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .active-page {
+            display: block;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--light-color);
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: bold;
+        }
+
+        .list-item:hover {
+            transform: translateX(5px);
+            background: #e2e8f0;
+        }
+
+        .list-item-text {
+            flex-grow: 1;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            background: #e2e8f0;
+        }
+
+        #game-area {
+            border: 2px solid #ccc;
+            padding: 5px;
+            margin-top: 20px;
+            background: #fff;
+            min-height: 500px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div id="page-home" class="page active-page">
+        <h1>PSC DISCUSSION ONLY</h1>
+        <p>പി എസ് സി ഡിസ്കഷനിലെ കൂട്ടുകാർക്ക് പഠിക്കുന്നതിന് മാത്രമായി ഉള്ള ഒരു സംവിധാനമാണിത്. ഒരു ഗവൺമെന്റ് ജോലി നേടാനായി ഇത് സഹായിക്കുമെന്ന് കരുതട്ടെ.</p>
+        <p>മുന്നോട്ട് പോകുന്നതിനായ് താഴെയുള്ള Let's GO ബട്ടൺ അമർത്തുക.</p>
+        <div class="center-wrapper">
+            <button class="btn btn-green" onclick="navigateTo('page-categories')">Let's GO</button>
+        </div>
+    </div>
+
+    <div id="page-categories" class="page">
+        <h1>Categories</h1>
+        <p>ദയവായി താഴെ നൽകിയിരിക്കുന്നവയിൽ പഠിക്കേണ്ട വിഷയം തിരഞ്ഞെടുക്കുക:</p>
+        <div id="categories-list"></div>
+    </div>
+
+    <div id="page-category-details" class="page">
+        <h1 id="current-category-title">Category Name</h1>
+        <h2>ലഭ്യമായ ഗെയിമുകൾ:</h2>
+        <div id="games-list"></div>
+    </div>
+
+    <div id="page-game-screen" class="page">
+        <h1 id="current-game-title">Game Name</h1>
+        <div id="game-area"></div>
+    </div>
+
+</div>
+
+<footer>
+    <button id="back-btn" class="btn btn-red" onclick="goBack()" style="display: none;">BACK</button>
+</footer>
+
+<script>
+    // ഫയലുകൾ ഒരേ ഫോൾഡറിലാക്കിയതുകൊണ്ട് 'games/' എന്നത് ഒഴിവാക്കി നേരിട്ട് ലിങ്ക് നൽകിയിരിക്കുന്നു
+    const appData = {
+        "Maths (ഗണിതം)": [
+            { name: "Maths Game 1", path: "maths.html" },
+            { name: "Maths Game 2", path: "maths2.html" }
+        ],
+        "Kerala History (കേരള ചരിത്രം)": [
+            { name: "Kerala History Game 1", path: "kerala history 1.html" },
+            { name: "Kerala History Game 2", path: "kerala history 2.html" }
+        ],
+        "Indian History (ഇന്ത്യൻ ചരിത്രം)": [
+            { name: "Indian History Game 1", path: "indian history 1.html" },
+            { name: "Indian History Game 2", path: "indian history 2.html" },
+            { name: "Indian History Game 3", path: "indian history 3.html" }
+        ],
+        "Renaissance (നവോത്ഥാനം)": [
+            { name: "Renaissance Game 1", path: "renaissance 1.html" },
+            { name: "Renaissance Game 2", path: "renaissance 2.html" }
+        ],
+        "Geography (ഭൂമിശാസ്ത്രം)": [
+            { name: "Geography Game 1", path: "geography.html" }
+        ]
+    };
+
+    let pageHistory = ['page-home'];
+    let currentCategory = '';
+
+    function navigateTo(pageId) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
+        document.getElementById(pageId).classList.add('active-page');
+        
+        if (pageHistory[pageHistory.length - 1] !== pageId) {
+            pageHistory.push(pageId);
+        }
+
+        if (pageId === 'page-home') {
+            document.getElementById('back-btn').style.display = 'none';
+        } else {
+            document.getElementById('back-btn').style.display = 'inline-block';
+        }
+
+        if (pageId === 'page-categories') {
+            renderCategories();
+        }
+    }
+
+    function goBack() {
+        if (pageHistory.length > 1) {
+            pageHistory.pop();
+            let previousPage = pageHistory[pageHistory.length - 1];
+            
+            if (previousPage === 'page-category-details') {
+                document.getElementById('game-area').innerHTML = '';
+            }
+
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
+            document.getElementById(previousPage).classList.add('active-page');
+
+            if (previousPage === 'page-home') {
+                document.getElementById('back-btn').style.display = 'none';
+            }
+        }
+    }
+
+    function renderCategories() {
+        const listContainer = document.getElementById('categories-list');
+        listContainer.innerHTML = '';
+
+        Object.keys(appData).forEach(category => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.onclick = () => openCategory(category);
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'list-item-text';
+            textSpan.innerText = category;
+
+            div.appendChild(textSpan);
+            listContainer.appendChild(div);
+        });
+    }
+
+    function openCategory(category) {
+        currentCategory = category;
+        document.getElementById('current-category-title').innerText = category;
+        renderGames();
+        navigateTo('page-category-details');
+    }
+
+    function renderGames() {
+        const gamesContainer = document.getElementById('games-list');
+        gamesContainer.innerHTML = '';
+
+        const games = appData[currentCategory] || [];
+
+        games.forEach((game) => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.onclick = () => playGame(game);
+
+            const textSpan = document.createElement('span');
+            textSpan.className = 'list-item-text';
+            textSpan.innerText = game.name;
+            div.appendChild(textSpan);
+
+            gamesContainer.appendChild(div);
+        });
+    }
+
+    function playGame(game) {
+        document.getElementById('current-game-title').innerText = game.name;
+        
+        const gameArea = document.getElementById('game-area');
+        gameArea.innerHTML = ''; 
+        
+        const iframe = document.createElement('iframe');
+        iframe.style.width = '100%';
+        iframe.style.height = '500px';
+        iframe.style.border = 'none';
+        iframe.src = game.path; // ഒരേ ലൊക്കേഷനിൽ ഉള്ളതുകൊണ്ട് ഫയൽ പെട്ടെന്ന് ലോഡ് ആകും
+        gameArea.appendChild(iframe);
+
+        navigateTo('page-game-screen');
+    }
+</script>
+
+</body>
+</html>
